@@ -1,7 +1,6 @@
 <template>
-  <div>>
-    App.vue
-  </div>
+  <!-- 路由出口 -->
+  <router-view></router-view>
 </template>
 <script>
 export default {

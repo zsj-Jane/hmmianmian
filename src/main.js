@@ -12,6 +12,8 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 // 注册Element-ui
 Vue.use(ElementUI);
+// 导入基础样式
+import './style/base.css'
 // 创建Vue实例，挂载到ip为app的div上
 new Vue({
   // 路由对象挂载到vue实例中
