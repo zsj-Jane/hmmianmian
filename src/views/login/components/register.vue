@@ -19,7 +19,7 @@
             <el-input v-model="form.imgCode" autocomplete="off" clearable></el-input>
           </el-col>
           <el-col :span="7" :offset="1">
-            <img src="../images/login_code.png" alt class="img_code" />
+            <img :src="picCodeURL" alt class="img_code" @click="getNewImgCode" />
           </el-col>
         </el-row>
       </el-form-item>
@@ -49,6 +49,8 @@ export default {
       dialogFormVisible: false,
       // 设置文字宽度
       formLabelWidth: "65px",
+      // 图形验证码的接口地址
+      picCodeURL: process.env.VUE_APP_BASE_URL + "/captcha?type=sendsms",
       // 跟表单元素双向绑定的对象
       form: {
         nickname: "",
@@ -60,23 +62,41 @@ export default {
       },
       // 规则对象
       rules: {
-          nickname:[
-              { required: true, message: "昵称不能为空", trigger: "blur" }
-          ],
-          email:[
-              { required: true, message: "邮箱不能为空", trigger: "blur" },
-              {pattern:/\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}/ , message:"邮箱格式不正确",trigger: "blur"}
-          ],
-          phone:[
-              { required: true, message: "手机号码不能为空", trigger: "blur" },
-              {pattern:/0?(13|14|15|17|18|19)[0-9]{9}/,message:"手机号格式不正确",trigger: "blur"}
-          ],
-          password:[
-              { required: true, message: "密码不能为空", trigger: "blur" },
-              { min:5,max:14, message: "密码长度在5-14之间", trigger: "change" }
-          ],
+        nickname: [
+          { required: true, message: "昵称不能为空", trigger: "blur" }
+        ],
+        email: [
+          { required: true, message: "邮箱不能为空", trigger: "blur" },
+          {
+            pattern: /\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}/,
+            message: "邮箱格式不正确",
+            trigger: "blur"
+          }
+        ],
+        phone: [
+          { required: true, message: "手机号码不能为空", trigger: "blur" },
+          {
+            pattern: /0?(13|14|15|17|18|19)[0-9]{9}/,
+            message: "手机号格式不正确",
+            trigger: "blur"
+          }
+        ],
+        password: [
+          { required: true, message: "密码不能为空", trigger: "blur" },
+          { min: 5, max: 14, message: "密码长度在5-14之间", trigger: "change" }
+        ]
       }
     };
+  },
+  methods: {
+    // 图形验证码 图片的点击事件
+    getNewImgCode() {
+      // 浏览器缓存机制：请求路径一致，会把上次请求的结果拿来用
+      // 解决办法：
+      //    1、随机数 Math.random()
+      //    2、时间戳（用得多一点） Date.now()
+      this.picCodeURL = process.env.VUE_APP_BASE_URL + "/captcha?type=sendsms"+Date.now();
+    }
   }
 };
 </script>
