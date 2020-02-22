@@ -43,11 +43,19 @@
     </div>
     <!-- 右侧图片 -->
     <img src="./images/login_banner_ele.png" alt />
+
+    <!-- 注册对话框 -->
+    <reg></reg>
   </div>
 </template>
 
 <script>
+// 导入注册组件
+import reg from './components/register';
 export default {
+  components:{
+    reg
+  },
   data() {
     return {
       // 表单数据
