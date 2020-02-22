@@ -29,7 +29,7 @@
             <el-input v-model="form.code" autocomplete="off" clearable></el-input>
           </el-col>
           <el-col :span="7" :offset="1">
-            <el-button>获取用户验证码</el-button>
+            <el-button @click="getPhoneCode" :disabled="sec!=0">{{sec==0?'获取用户验证码':'还有'+sec+'秒'}}</el-button>
           </el-col>
         </el-row>
       </el-form-item>
@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   data() {
     return {
@@ -51,6 +52,8 @@ export default {
       formLabelWidth: "65px",
       // 图形验证码的接口地址
       picCodeURL: process.env.VUE_APP_BASE_URL + "/captcha?type=sendsms",
+      // 倒计时秒数
+      sec: 0,
       // 跟表单元素双向绑定的对象
       form: {
         nickname: "",
@@ -91,11 +94,43 @@ export default {
   methods: {
     // 图形验证码 图片的点击事件
     getNewImgCode() {
-      // 浏览器缓存机制：请求路径一致，会把上次请求的结果拿来用
+      // 浏览器缓存机制：当请求路径一致时，会把上次请求的结果拿来用
       // 解决办法：
       //    1、随机数 Math.random()
       //    2、时间戳（用得多一点） Date.now()
-      this.picCodeURL = process.env.VUE_APP_BASE_URL + "/captcha?type=sendsms"+Date.now();
+      this.picCodeURL =
+        process.env.VUE_APP_BASE_URL + "/captcha?type=sendsms" + Date.now();
+    },
+    // 获取手机验证码 按钮的点击事件
+    getPhoneCode() {
+        this.sec=60;
+        // 倒计时，每隔一秒，秒数减1
+        let timeID=setInterval(()=>{
+            this.sec--;
+            if (this.sec==0) {
+                clearInterval(timeID);
+            }
+        },1000);
+        // 发送请求获取验证码
+        // axios如果发跨域请求，默认不会携带cookie
+        axios({
+            url:process.env.VUE_APP_BASE_URL+'/sendsms',
+            method:'post',
+            data: { 
+                code:this.form.imgCode,
+                phone:this.form.phone,
+            },
+            // 允许携带cookie
+            withCredentials:true
+        }).then(res=>{
+            //成功回调
+            window.console.log(res);
+            if(res.data.code==200){
+                alert('获取验证码成功，验证码为'+res.data.data.captcha);
+            }else{
+                alert(res.data.message);
+            }
+        });
     }
   }
 };
