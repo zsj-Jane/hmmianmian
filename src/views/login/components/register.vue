@@ -1,22 +1,22 @@
 <template>
   <el-dialog title="用户注册" center :visible.sync="dialogFormVisible" width="603px">
-    <el-form :model="form">
-      <el-form-item label="昵称" :label-width="formLabelWidth">
-        <el-input v-model="form.nickname" autocomplete="off"></el-input>
+    <el-form :model="form" :rules="rules">
+      <el-form-item label="昵称" prop="nickname" :label-width="formLabelWidth">
+        <el-input v-model="form.nickname" autocomplete="off" clearable></el-input>
       </el-form-item>
-      <el-form-item label="邮箱" :label-width="formLabelWidth">
-        <el-input v-model="form.email" autocomplete="off"></el-input>
+      <el-form-item label="邮箱" prop="email" :label-width="formLabelWidth">
+        <el-input v-model="form.email" autocomplete="off" clearable></el-input>
       </el-form-item>
-      <el-form-item label="手机" :label-width="formLabelWidth">
-        <el-input v-model="form.phone" autocomplete="off"></el-input>
+      <el-form-item label="手机" prop="phone" :label-width="formLabelWidth">
+        <el-input v-model="form.phone" autocomplete="off" clearable></el-input>
       </el-form-item>
-      <el-form-item label="密码" :label-width="formLabelWidth">
-        <el-input v-model="form.password" autocomplete="off"></el-input>
+      <el-form-item label="密码" prop="password" :label-width="formLabelWidth">
+        <el-input v-model="form.password" autocomplete="off" clearable show-password></el-input>
       </el-form-item>
       <el-form-item label="图形码" :label-width="formLabelWidth">
         <el-row>
           <el-col :span="16">
-            <el-input v-model="form.imgCode" autocomplete="off"></el-input>
+            <el-input v-model="form.imgCode" autocomplete="off" clearable></el-input>
           </el-col>
           <el-col :span="7" :offset="1">
             <img src="../images/login_code.png" alt class="img_code" />
@@ -26,10 +26,10 @@
       <el-form-item label="验证码" :label-width="formLabelWidth">
         <el-row>
           <el-col :span="16">
-            <el-input v-model="form.code" autocomplete="off"></el-input>
+            <el-input v-model="form.code" autocomplete="off" clearable></el-input>
           </el-col>
           <el-col :span="7" :offset="1">
-              <el-button>获取用户验证码</el-button>
+            <el-button>获取用户验证码</el-button>
           </el-col>
         </el-row>
       </el-form-item>
@@ -45,8 +45,11 @@
 export default {
   data() {
     return {
+      // 是否显示对话框
       dialogFormVisible: false,
+      // 设置文字宽度
       formLabelWidth: "65px",
+      // 跟表单元素双向绑定的对象
       form: {
         nickname: "",
         email: "",
@@ -54,6 +57,24 @@ export default {
         password: "",
         imgCode: "",
         code: ""
+      },
+      // 规则对象
+      rules: {
+          nickname:[
+              { required: true, message: "昵称不能为空", trigger: "blur" }
+          ],
+          email:[
+              { required: true, message: "邮箱不能为空", trigger: "blur" },
+              {pattern:/\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}/ , message:"邮箱格式不正确",trigger: "blur"}
+          ],
+          phone:[
+              { required: true, message: "手机号码不能为空", trigger: "blur" },
+              {pattern:/0?(13|14|15|17|18|19)[0-9]{9}/,message:"手机号格式不正确",trigger: "blur"}
+          ],
+          password:[
+              { required: true, message: "密码不能为空", trigger: "blur" },
+              { min:5,max:14, message: "密码长度在5-14之间", trigger: "change" }
+          ],
       }
     };
   }
