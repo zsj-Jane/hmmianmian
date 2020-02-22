@@ -37,7 +37,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" class="btn-box" @click="doLogin">登录</el-button>
-          <el-button type="primary" class="btn-box">注册</el-button>
+          <el-button type="primary" class="btn-box" @click="showReg">注册</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -45,7 +45,7 @@
     <img src="./images/login_banner_ele.png" alt />
 
     <!-- 注册对话框 -->
-    <reg></reg>
+    <reg ref="reg"></reg>
   </div>
 </template>
 
@@ -91,6 +91,7 @@ export default {
     };
   },
   methods: {
+    // 登录的点击事件
     doLogin() {
       // 找到表单对象，调用validate方法
       this.$refs.loginForm.validate(v => {
@@ -99,6 +100,10 @@ export default {
           // 正儿八经发请求比较合理
         }
       });
+    },
+    // 注册的点击事件
+    showReg(){
+      this.$refs.reg.dialogFormVisible=true;
     }
   }
 };
