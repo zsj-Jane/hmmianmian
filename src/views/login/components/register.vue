@@ -44,7 +44,7 @@
 <script>
 // import axios from 'axios'
 // 导入发送短信验证请求的方法
-import sendSMS from "../../../api/register";
+import {sendSMS} from "../../../api/register";
 export default {
   data() {
     return {
