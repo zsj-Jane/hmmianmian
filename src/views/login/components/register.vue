@@ -42,7 +42,9 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
+// 导入发送短信验证请求的方法
+import sendSMS from "../../../api/register";
 export default {
   data() {
     return {
@@ -103,36 +105,31 @@ export default {
     },
     // 获取手机验证码 按钮的点击事件
     getPhoneCode() {
-        this.sec=60;
-        // 倒计时，每隔一秒，秒数减1
-        let timeID=setInterval(()=>{
-            this.sec--;
-            if (this.sec==0) {
-                clearInterval(timeID);
-            }
-        },1000);
-        // 发送请求获取验证码
-        // axios如果发跨域请求，默认不会携带cookie
-        axios({
-            url:process.env.VUE_APP_BASE_URL+'/sendsms',
-            method:'post',
-            data: { 
-                code:this.form.imgCode,
-                phone:this.form.phone,
-            },
-            // 允许携带cookie
-            withCredentials:true
-        }).then(res=>{
-            //成功回调
-            window.console.log(res);
-            if(res.data.code==200){
-                // alert('获取验证码成功，验证码为'+res.data.data.captcha);
-                this.$message.success('获取验证码成功，验证码为'+res.data.data.captcha);
-            }else{
-                // alert(res.data.message);
-                this.$message.error(res.data.message);
-            }
-        });
+      this.sec = 60;
+      // 倒计时，每隔一秒，秒数减1
+      let timeID = setInterval(() => {
+        this.sec--;
+        if (this.sec == 0) {
+          clearInterval(timeID);
+        }
+      }, 1000);
+      // 发送请求获取验证码,调用封装方法
+      sendSMS({
+        code: this.form.imgCode,
+        phone: this.form.phone
+      }).then(res => {
+        //成功回调
+        window.console.log(res);
+        if (res.data.code == 200) {
+          // alert('获取验证码成功，验证码为'+res.data.data.captcha);
+          this.$message.success(
+            "获取验证码成功，验证码为" + res.data.data.captcha
+          );
+        } else {
+          // alert(res.data.message);
+          this.$message.error(res.data.message);
+        }
+      });
     }
   }
 };
