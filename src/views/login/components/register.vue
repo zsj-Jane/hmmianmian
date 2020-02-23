@@ -101,7 +101,7 @@ export default {
       //    1、随机数 Math.random()
       //    2、时间戳（用得多一点） Date.now()
       this.picCodeURL =
-        process.env.VUE_APP_BASE_URL + "/captcha?type=sendsms" + Date.now();
+        process.env.VUE_APP_BASE_URL + "/captcha?type=sendsms&t=" + Date.now();
     },
     // 获取手机验证码 按钮的点击事件
     getPhoneCode() {
