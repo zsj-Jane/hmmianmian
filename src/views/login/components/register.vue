@@ -126,9 +126,11 @@ export default {
             //成功回调
             window.console.log(res);
             if(res.data.code==200){
-                alert('获取验证码成功，验证码为'+res.data.data.captcha);
+                // alert('获取验证码成功，验证码为'+res.data.data.captcha);
+                this.$message.success('获取验证码成功，验证码为'+res.data.data.captcha);
             }else{
-                alert(res.data.message);
+                // alert(res.data.message);
+                this.$message.error(res.data.message);
             }
         });
     }
