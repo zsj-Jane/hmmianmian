@@ -1,11 +1,18 @@
 <template>
   <el-container class="my-container">
+    <!-- 顶部通栏 -->
     <el-header class="my-header">
+      <!-- 左侧 -->
       <div class="left">
-        <i class="el-icon-s-fold"></i>
+        <!-- 字体图标 -->
+        <i
+          :class="isCollapse ? 'el-icon-s-unfold': 'el-icon-s-fold'"
+          @click="isCollapse=!isCollapse"
+        ></i>
         <img src="./images/logo.png" alt />
         <span>黑马面面</span>
       </div>
+      <!-- 右侧 -->
       <div class="right">
         <img :src="avatar" alt />
         <span class="name">{{username}}，您好</span>
@@ -13,8 +20,33 @@
       </div>
     </el-header>
     <el-container>
-      <el-aside width="200px" class="my-aside">Aside</el-aside>
-      <el-main class="my-main">Main</el-main>
+      <!-- 左侧部分 -->
+      <el-aside width="auto" class="my-aside">
+        <el-menu default-active="1" class="el-menu-vertical-demo" :collapse="isCollapse">
+          <el-menu-item index="1">
+            <i class="el-icon-pie-chart"></i>
+            <span slot="title">数据概览</span>
+          </el-menu-item>
+          <el-menu-item index="2">
+            <i class="el-icon-user"></i>
+            <span slot="title">用户列表</span>
+          </el-menu-item>
+          <el-menu-item index="3">
+            <i class="el-icon-edit-outline"></i>
+            <span slot="title">题库列表</span>
+          </el-menu-item>
+          <el-menu-item index="4">
+            <i class="el-icon-office-building"></i>
+            <span slot="title">企业列表</span>
+          </el-menu-item>
+          <el-menu-item index="5">
+            <i class="el-icon-notebook-2"></i>
+            <span slot="title">学科列表</span>
+          </el-menu-item>
+        </el-menu>
+      </el-aside>
+      <!-- 右侧部分 -->
+      <el-main class="my-main"></el-main>
     </el-container>
   </el-container>
 </template>
@@ -28,7 +60,9 @@ export default {
   data() {
     return {
       username: "",
-      avatar: ""
+      avatar: "",
+      // 是否折叠左侧导航栏
+      isCollapse: false
     };
   },
   methods: {
@@ -121,10 +155,15 @@ export default {
     }
   }
   .my-aside {
-    background-color: red;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0px 2px 5px 0px rgba(63, 63, 63, 0.35);
+    .el-menu-vertical-demo:not(.el-menu--collapse) {
+      width: 200px;
+      min-height: 400px;
+    }
   }
   .my-main {
-    background-color: skyblue;
+    background:rgba(232,233,236,1);
   }
 }
 </style>
