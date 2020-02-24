@@ -54,6 +54,8 @@
 import reg from './components/register';
 // 导入用户登录方法
 import {login} from '@/api/login.js';
+// 导入 token方法
+import {setToken} from '@/utilis/token.js'
 export default {
   components:{
     reg
@@ -108,7 +110,7 @@ export default {
             window.console.log(res);
             if(res.data.code==200){
               // 存储token
-              window.localStorage.setItem('token',res.data.data.token);
+              setToken(res.data.data.token);
               // 登录成功提示
               this.$message.success('登录成功');
               // 跳转页面到首页
