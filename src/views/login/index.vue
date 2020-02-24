@@ -22,7 +22,7 @@
               <el-input v-model="form.captcha" prefix-icon="el-icon-key" clearable></el-input>
             </el-col>
             <el-col :span="7">
-              <img src="./images/login_code.png" alt class="code" />
+              <img :src="imgUrl" alt class="code" @click="changeImgCode"/>
             </el-col>
           </el-row>
         </el-form-item>
@@ -58,6 +58,8 @@ export default {
   },
   data() {
     return {
+      // 登录验证码的图片地址
+      imgUrl:process.env.VUE_APP_BASE_URL+"/captcha?type=login",
       // 表单数据
       form: {
         phone: "",
@@ -104,6 +106,11 @@ export default {
     // 注册的点击事件
     showReg(){
       this.$refs.reg.dialogFormVisible=true;
+    },
+    // 登录验证码 图片的点击事件
+    changeImgCode(){
+      // 点击刷新，切换验证码
+      this.imgUrl = process.env.VUE_APP_BASE_URL+"/captcha?type=login&t="+Date.now();
     }
   }
 };
