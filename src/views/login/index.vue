@@ -52,6 +52,8 @@
 <script>
 // 导入注册组件
 import reg from './components/register';
+// 导入用户登录方法
+import {login} from '@/api/login.js';
 export default {
   components:{
     reg
@@ -98,8 +100,24 @@ export default {
       // 找到表单对象，调用validate方法
       this.$refs.loginForm.validate(v => {
         if (v) {
-          alert("全部通过");
-          // 正儿八经发请求比较合理
+          login({
+            phone:this.form.phone,
+            password:this.form.password,
+            code:this.form.captcha
+          }).then(res=>{
+            window.console.log(res);
+            if(res.data.code==200){
+              // 存储token
+              window.localStorage.setItem('token',res.data.data.token);
+              // 登录成功提示
+              this.$message.success('登录成功');
+              // 跳转页面到首页
+              this.$router.push('/index');
+            }else{
+              // 错误提示
+              this.$message.error(res.data.message);
+            }
+          })
         }
       });
     },
