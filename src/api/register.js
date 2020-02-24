@@ -11,3 +11,14 @@ export function sendSMS(data) {
         withCredentials: true
     });
 }
+
+// 发送注册账号接口的请求
+export function register(data) {
+    return axios({
+        url:process.env.VUE_APP_BASE_URL+"/register",
+        method:"post",
+        data,
+        // 允许携带cookie
+        withCredentials:true
+    });
+}
