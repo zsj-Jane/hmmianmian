@@ -57,10 +57,10 @@
 
 <script>
 // import axios from 'axios'
-// 导入发送短信验证请求的方法
+// 导入发送短信验证请求的方法，注册账号请求
 // import {sendSMS} from "../../../api/register";
 // 路径导入简化，@符号表示/src目录
-import { sendSMS } from "@/api/register";
+import { sendSMS, register } from "@/api/register";
 export default {
   data() {
     return {
@@ -79,7 +79,7 @@ export default {
       // 跟表单元素双向绑定的对象
       form: {
         // 头像
-        avatar:"",
+        avatar: "",
         // 昵称
         username: "",
         // 邮箱
@@ -140,6 +140,36 @@ export default {
     };
   },
   methods: {
+    // 注册，表单验证
+    doRegister() {
+      // 验证表单所有元素
+      this.$refs.regForm.validate(v => {
+        if (v) {
+          register({
+            username: this.form.username,
+            phone: this.form.phone,
+            email: this.form.email,
+            avatar: this.form.avatar,
+            password: this.form.password,
+            rcode: this.form.rcode
+          }).then(res => {
+            // window.console.log(res);
+            if (res.data.code == 200) {
+              // 提示注册成功
+              this.$message.success("注册成功");
+              // 注册成功，关闭对话框
+              this.dialogFormVisible = false;
+              // 重置注册表单（只能重置表单元素，其他的需要另外写）
+              this.$refs.regForm.resetFields();
+              // 头像的预览的清空需要另外设置
+              this.imageUrl="";
+            }else{
+              this.$message.error(res.data.message);
+            }
+          });
+        }
+      });
+    },
     // 图形验证码 图片的点击事件
     getNewImgCode() {
       // 浏览器缓存机制：当请求路径一致时，会把上次请求的结果拿来用
@@ -196,7 +226,6 @@ export default {
       const isImg = file.type === "image/jpeg" || "image/png" || "image/gif";
       // 判断上传文件的大小，1M=1024KB，1kb=1024B
       const isLt2M = file.size / 1024 / 1024 < 2;
-
       if (!isImg) {
         this.$message.error("上传头像图片只能是图片格式!");
       }
@@ -214,17 +243,7 @@ export default {
       // 上传成功后，给表单的头像元素 赋值 图片在服务器中的路径
       this.form.avatar = res.data.file_path;
       // 对头像上传的表单字段进行校验
-      this.$refs.regForm.validateField('avatar');
-    },
-    // 注册，表单验证
-    doRegister(){
-      // 验证表单所有元素
-      this.$refs.regForm.validate(v=>{
-        if (v) {
-          alert('全部通过');
-        }
-      })
-      // this.dialogFormVisible = false;
+      this.$refs.regForm.validateField("avatar");
     }
   }
 };
