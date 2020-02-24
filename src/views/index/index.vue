@@ -7,9 +7,9 @@
         <span>黑马面面</span>
       </div>
       <div class="right">
-        <img src="./images/logo.png" alt />
-        <span class="name">黑马，您好</span>
-        <el-button type="primary" size="mini">退出</el-button>
+        <img :src="avatar" alt />
+        <span class="name">{{username}}，您好</span>
+        <el-button type="primary" size="mini" @click="doLogout">退出</el-button>
       </div>
     </el-header>
     <el-container>
@@ -20,7 +20,56 @@
 </template>
 
 <script>
-export default {};
+// 导入接口
+import { getInfo, logout } from "@/api/index.js";
+// 导入删除token的文件
+import { removeToken } from "@/utilis/token.js";
+export default {
+  data() {
+    return {
+      username: "",
+      avatar: ""
+    };
+  },
+  methods: {
+    //   退出登录
+    doLogout() {
+      this.$confirm("您将退出本系统，是否继续退出", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          logout().then(res => {
+            if (res.data.code == 200) {
+              // 退出成功提示
+              this.$message.success("退出成功!");
+              // 删除本地token
+              removeToken();
+              // 跳转到登录页面
+              this.$router.push("/login");
+            }
+          });
+        })
+        .catch(() => {
+          // 取消退出提示
+          this.$message({
+            type: "success",
+            message: "取消退出!"
+          });
+        });
+    }
+  },
+  created() {
+    //   获取用户信息
+    getInfo().then(res => {
+      //   window.console.log(res);
+      this.username = res.data.data.username;
+      //   需要拼接基地址和一个/
+      this.avatar = process.env.VUE_APP_BASE_URL + "/" + res.data.data.avatar;
+    });
+  }
+};
 </script>
 
 <style lang="less">
