@@ -1,7 +1,7 @@
 <template>
   <el-dialog title="用户注册" center :visible.sync="dialogFormVisible" width="603px">
-    <el-form :model="form" :rules="rules">
-      <el-form-item label="头像" :label-width="formLabelWidth">
+    <el-form :model="form" :rules="rules" ref="regForm">
+      <el-form-item label="头像" prop="avatar" :label-width="formLabelWidth">
         <el-upload
           name="image"
           class="avatar-uploader"
@@ -9,13 +9,14 @@
           :show-file-list="false"
           :on-success="handleAvatarSuccess"
           :before-upload="beforeAvatarUpload"
+          v-model="form.avatar"
         >
           <img v-if="imageUrl" :src="imageUrl" class="avatar" />
           <i v-else class="el-icon-plus avatar-uploader-icon" style="line-height:178px"></i>
         </el-upload>
       </el-form-item>
-      <el-form-item label="昵称" prop="nickname" :label-width="formLabelWidth">
-        <el-input v-model="form.nickname" autocomplete="off" clearable></el-input>
+      <el-form-item label="昵称" prop="username" :label-width="formLabelWidth">
+        <el-input v-model="form.username" autocomplete="off" clearable></el-input>
       </el-form-item>
       <el-form-item label="邮箱" prop="email" :label-width="formLabelWidth">
         <el-input v-model="form.email" autocomplete="off" clearable></el-input>
@@ -26,7 +27,7 @@
       <el-form-item label="密码" prop="password" :label-width="formLabelWidth">
         <el-input v-model="form.password" autocomplete="off" clearable show-password></el-input>
       </el-form-item>
-      <el-form-item label="图形码" :label-width="formLabelWidth">
+      <el-form-item label="图形码" prop="imgCode" :label-width="formLabelWidth">
         <el-row>
           <el-col :span="16">
             <el-input v-model="form.imgCode" autocomplete="off" clearable></el-input>
@@ -36,10 +37,10 @@
           </el-col>
         </el-row>
       </el-form-item>
-      <el-form-item label="验证码" :label-width="formLabelWidth">
+      <el-form-item label="验证码" prop="rcode" :label-width="formLabelWidth">
         <el-row>
           <el-col :span="16">
-            <el-input v-model="form.code" autocomplete="off" clearable></el-input>
+            <el-input v-model="form.rcode" autocomplete="off" clearable></el-input>
           </el-col>
           <el-col :span="7" :offset="1">
             <el-button @click="getPhoneCode" :disabled="sec!=0">{{sec==0?'获取用户验证码':'还有'+sec+'秒'}}</el-button>
@@ -49,7 +50,7 @@
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="dialogFormVisible = false">取 消</el-button>
-      <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      <el-button type="primary" @click="doRegister">确 定</el-button>
     </div>
   </el-dialog>
 </template>
@@ -68,7 +69,7 @@ export default {
       // 设置文字宽度
       formLabelWidth: "65px",
       // 要上传图片的接口地址
-      uploadUrl:process.env.VUE_APP_BASE_URL+"/uploads",
+      uploadUrl: process.env.VUE_APP_BASE_URL + "/uploads",
       // 上传成功后的头像图片的临时路径
       imageUrl: "",
       // 图形验证码的接口地址
@@ -77,18 +78,32 @@ export default {
       sec: 0,
       // 跟表单元素双向绑定的对象
       form: {
-        nickname: "",
+        // 头像
+        avatar:"",
+        // 昵称
+        username: "",
+        // 邮箱
         email: "",
+        // 手机号码
         phone: "",
+        // 密码
         password: "",
+        // 图形码
         imgCode: "",
-        code: ""
+        // 手机验证码
+        rcode: ""
       },
       // 规则对象
       rules: {
-        nickname: [
+        // 头像
+        avatar: [
+          { required: true, message: "头像不能为空", trigger: "change" }
+        ],
+        // 昵称
+        username: [
           { required: true, message: "昵称不能为空", trigger: "blur" }
         ],
+        // 邮箱
         email: [
           { required: true, message: "邮箱不能为空", trigger: "blur" },
           {
@@ -97,6 +112,7 @@ export default {
             trigger: "blur"
           }
         ],
+        // 手机号码
         phone: [
           { required: true, message: "手机号码不能为空", trigger: "blur" },
           {
@@ -105,9 +121,20 @@ export default {
             trigger: "blur"
           }
         ],
+        // 密码
         password: [
           { required: true, message: "密码不能为空", trigger: "blur" },
           { min: 5, max: 14, message: "密码长度在5-14之间", trigger: "change" }
+        ],
+        // 图像验证码
+        imgCode: [
+          { required: true, message: "图形码不能为空", trigger: "blur" },
+          { len: 4, message: "图形码长度为4位", trigger: "blur" }
+        ],
+        // 手机验证码
+        rcode: [
+          { required: true, message: "验证码不能为空", trigger: "blur" },
+          { len: 4, message: "验证码长度为4位", trigger: "blur" }
         ]
       }
     };
@@ -166,7 +193,7 @@ export default {
     // 作用：对上传文件做判断，成功才上传，否则给错误提示
     beforeAvatarUpload(file) {
       // 判断上传的文件类型
-      const isImg = file.type === "image/jpeg"||"image/png"||"image/gif";
+      const isImg = file.type === "image/jpeg" || "image/png" || "image/gif";
       // 判断上传文件的大小，1M=1024KB，1kb=1024B
       const isLt2M = file.size / 1024 / 1024 < 2;
 
@@ -182,8 +209,22 @@ export default {
     // 上传之后调用的回调函数
     handleAvatarSuccess(res, file) {
       //res为响应体，file中有上传成功后的图片信息
-      // 把图片转换成临时路径
+      // 把图片转换成临时路径 用于图片预览
       this.imageUrl = URL.createObjectURL(file.raw);
+      // 上传成功后，给表单的头像元素 赋值 图片在服务器中的路径
+      this.form.avatar = res.data.file_path;
+      // 对头像上传的表单字段进行校验
+      this.$refs.regForm.validateField('avatar');
+    },
+    // 注册，表单验证
+    doRegister(){
+      // 验证表单所有元素
+      this.$refs.regForm.validate(v=>{
+        if (v) {
+          alert('全部通过');
+        }
+      })
+      // this.dialogFormVisible = false;
     }
   }
 };
@@ -204,7 +245,7 @@ export default {
   height: 40px;
   vertical-align: middle;
 }
-.avatar-uploader{
+.avatar-uploader {
   text-align: center;
 }
 .avatar-uploader .el-upload {
