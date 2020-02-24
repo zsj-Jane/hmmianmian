@@ -46,7 +46,11 @@
         </el-menu>
       </el-aside>
       <!-- 右侧部分 -->
-      <el-main class="my-main"></el-main>
+      <el-main class="my-main">
+          <!-- 嵌套路由 -->
+          <!-- 子路由的路由出口 -->
+          <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
