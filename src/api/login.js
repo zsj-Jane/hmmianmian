@@ -9,4 +9,4 @@ export function login(data) {
         // 允许携带cookie
         withCredentials: true
     });
-};
+}
