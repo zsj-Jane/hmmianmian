@@ -1,6 +1,19 @@
 <template>
   <el-dialog title="用户注册" center :visible.sync="dialogFormVisible" width="603px">
     <el-form :model="form" :rules="rules">
+      <el-form-item label="头像" :label-width="formLabelWidth">
+        <el-upload
+          name="image"
+          class="avatar-uploader"
+          :action="uploadUrl"
+          :show-file-list="false"
+          :on-success="handleAvatarSuccess"
+          :before-upload="beforeAvatarUpload"
+        >
+          <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+          <i v-else class="el-icon-plus avatar-uploader-icon" style="line-height:178px"></i>
+        </el-upload>
+      </el-form-item>
       <el-form-item label="昵称" prop="nickname" :label-width="formLabelWidth">
         <el-input v-model="form.nickname" autocomplete="off" clearable></el-input>
       </el-form-item>
@@ -44,7 +57,9 @@
 <script>
 // import axios from 'axios'
 // 导入发送短信验证请求的方法
-import {sendSMS} from "../../../api/register";
+// import {sendSMS} from "../../../api/register";
+// 路径导入简化，@符号表示/src目录
+import { sendSMS } from "@/api/register";
 export default {
   data() {
     return {
@@ -52,6 +67,10 @@ export default {
       dialogFormVisible: false,
       // 设置文字宽度
       formLabelWidth: "65px",
+      // 要上传图片的接口地址
+      uploadUrl:process.env.VUE_APP_BASE_URL+"/uploads",
+      // 上传成功后的头像图片的临时路径
+      imageUrl: "",
       // 图形验证码的接口地址
       picCodeURL: process.env.VUE_APP_BASE_URL + "/captcha?type=sendsms",
       // 倒计时秒数
@@ -105,6 +124,18 @@ export default {
     },
     // 获取手机验证码 按钮的点击事件
     getPhoneCode() {
+      // 判断手机号码格式是否正确
+      if (!/0?(13|14|15|17|18|19)[0-9]{9}/.test(this.form.phone)) {
+        // 提示手机号码不合法
+        this.$message.error("手机号码格式不正确");
+        return;
+      }
+      // 判断图形验证码输入格式是否正确
+      if (this.form.imgCode.length != 4) {
+        // 提示图形验证码格式不正确
+        return this.$message.error("验证码长度不匹配");
+      }
+      // 当手机号码和图形验证码都正确的情况下，执行手机验证码请求的代码
       this.sec = 60;
       // 倒计时，每隔一秒，秒数减1
       let timeID = setInterval(() => {
@@ -130,6 +161,29 @@ export default {
           this.$message.error(res.data.message);
         }
       });
+    },
+    // 上传之前调用的函数
+    // 作用：对上传文件做判断，成功才上传，否则给错误提示
+    beforeAvatarUpload(file) {
+      // 判断上传的文件类型
+      const isImg = file.type === "image/jpeg"||"image/png"||"image/gif";
+      // 判断上传文件的大小，1M=1024KB，1kb=1024B
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isImg) {
+        this.$message.error("上传头像图片只能是图片格式!");
+      }
+      if (!isLt2M) {
+        this.$message.error("上传头像图片大小不能超过 2MB!");
+      }
+      // 当既满足格式要求，又满足大小要求，就上传
+      return isImg && isLt2M;
+    },
+    // 上传之后调用的回调函数
+    handleAvatarSuccess(res, file) {
+      //res为响应体，file中有上传成功后的图片信息
+      // 把图片转换成临时路径
+      this.imageUrl = URL.createObjectURL(file.raw);
     }
   }
 };
@@ -149,5 +203,31 @@ export default {
   width: 100%;
   height: 40px;
   vertical-align: middle;
+}
+.avatar-uploader{
+  text-align: center;
+}
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
 }
 </style>
