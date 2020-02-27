@@ -48,7 +48,7 @@ const router = new VueRouter({
     ]
 });
 // 6.导航守卫(写在创建路由对象之后)
-// 前置守卫
+// 前置守卫（准备进入到某个页面触发）
 router.beforeEach((to, from, next) => {
     // 路由跳转之前调用的回调函数
     // to:对象，去哪里  from:对象，从哪来  
@@ -75,13 +75,15 @@ router.beforeEach((to, from, next) => {
                 Message.error('登录状态异常，请重新登录');
                 // 删除token
                 removeToken();
+                // 手动结束进度条(因为本来要进入index页面，但是token出错了，进度条没有结束，要手动结束)
+                NProgress.done();
                 // 跳转到登录页面
                 next('/login');
             }
         });
     }
 })
-// 后置守卫
+// 后置守卫（已经进入到某个页面触发）
 router.afterEach(() => {
     // 路由跳转之后调用的回调函数
     // to:对象，去哪里  from:对象，从哪来
