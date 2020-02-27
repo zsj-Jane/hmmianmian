@@ -49,9 +49,9 @@
       </el-aside>
       <!-- 右侧部分 -->
       <el-main class="my-main">
-          <!-- 嵌套路由 -->
-          <!-- 子路由的路由出口 -->
-          <router-view></router-view>
+        <!-- 嵌套路由 -->
+        <!-- 子路由的路由出口 -->
+        <router-view></router-view>
       </el-main>
     </el-container>
   </el-container>
@@ -61,7 +61,7 @@
 // 导入接口
 import { getInfo, logout } from "@/api/index.js";
 // 导入操作token的文件
-import { removeToken,getToken } from "@/utilis/token.js";
+import { removeToken, getToken } from "@/utilis/token.js";
 export default {
   data() {
     return {
@@ -102,20 +102,32 @@ export default {
   },
   beforeCreate() {
     // 如果得到null，表示没有token，即没有登录
-    if (getToken()==null) {
+    if (getToken() == null) {
       // 错误提示
-      this.$message.error('请先登录');
+      this.$message.error("请先登录");
       // 跳转到登录页面
-      this.$router.push('/login');
+      this.$router.push("/login");
     }
   },
   created() {
-    //   获取用户信息
+    // 获取用户信息
+    // 带入token给服务器请求
+    // ajax是异步请求：异步请求要等同步任务执行完毕才执行
     getInfo().then(res => {
       //   window.console.log(res);
-      this.username = res.data.data.username;
-      //   需要拼接基地址和一个/
-      this.avatar = process.env.VUE_APP_BASE_URL + "/" + res.data.data.avatar;
+      if (res.data.code == 200) {
+        // token正确
+        this.username = res.data.data.username;
+        // 需要拼接基地址和一个/
+        this.avatar = process.env.VUE_APP_BASE_URL + "/" + res.data.data.avatar;
+      } else if (res.data.code == 206) {
+        //如果token有误，错误提示
+        this.$message.error("登录状态异常，请重新登录");
+        // 删除token
+        removeToken();
+        // 跳转到登录页面
+        this.$router.push("/login");
+      }
     });
   }
 };
@@ -178,7 +190,7 @@ export default {
     }
   }
   .my-main {
-    background:rgba(232,233,236,1);
+    background: rgba(232, 233, 236, 1);
   }
 }
 </style>
