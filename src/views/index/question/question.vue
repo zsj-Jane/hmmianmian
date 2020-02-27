@@ -1,7 +1,5 @@
 <template>
-  <div>
-      user index
-  </div>
+  <h3>question.vue</h3>
 </template>
 
 <script>
