@@ -60,8 +60,8 @@
 <script>
 // 导入接口
 import { getInfo, logout } from "@/api/index.js";
-// 导入删除token的文件
-import { removeToken } from "@/utilis/token.js";
+// 导入操作token的文件
+import { removeToken,getToken } from "@/utilis/token.js";
 export default {
   data() {
     return {
@@ -98,6 +98,15 @@ export default {
             message: "取消退出!"
           });
         });
+    }
+  },
+  beforeCreate() {
+    // 如果得到null，表示没有token，即没有登录
+    if (getToken()==null) {
+      // 错误提示
+      this.$message.error('请先登录');
+      // 跳转到登录页面
+      this.$router.push('/login');
     }
   },
   created() {
