@@ -1,5 +1,8 @@
 // 1.导入vue
 import Vue from 'vue';
+// 导入NProgress的包
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
 // 2.导入路由
 import VueRouter from 'vue-router';
 // 3.注册路由
@@ -38,5 +41,29 @@ const router = new VueRouter({
         }
     ]
 });
-// 6.将路由对象暴露出去
+// 6.导航守卫(写在创建路由对象之后)
+// 前置守卫
+router.beforeEach((to, from, next) => {
+    // 路由跳转之前调用的回调函数
+    // to:对象，去哪里  from:对象，从哪来  
+    /* next:
+        一个函数，表示放行，调用代表放行，不调用代表不放行，
+        不传参数，就代表原来要到哪去就放行到哪
+        传了参数，就代表放行到要传的参数的路径上去
+    */
+    // to and from are both route objects. must call `next`.
+    // 开启进度条
+    NProgress.start();
+    // 调用next跳转函数
+    next();
+})
+// 后置守卫
+router.afterEach(() => {
+    // 路由跳转之后调用的回调函数
+    // to:对象，去哪里  from:对象，从哪来
+    // to and from are both route objects.
+    // 进来以后结束进度条
+    NProgress.done();
+})
+// 7.将路由对象暴露出去
 export default router;
