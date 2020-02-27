@@ -25,29 +25,39 @@ import subject from '../views/index/subject/subject.vue'
 const router = new VueRouter({
     routes: [
         {
+            // 路由重定向
+            path: '/',
+            redirect: login
+        },
+        {
             path: '/login',
-            component: login
+            component: login,
+            // 路由元信息:给某个路由打标签
+            meta:{title:'登录'}
         },
         {
             path: '/index',
             component: index,
+            meta:{title:'首页'},
             // index的子路由，子路由一般不加/
             children: [
                 // 数据概览
-                { path: 'chart', component: chart },
+                { path: 'chart', component: chart, meta: { title: '数据概览' } },
                 // 用户列表
-                { path: 'user', component: user },
+                { path: 'user', component: user, meta: { title: '用户列表' } },
                 // 题库列表
-                { path: 'question', component: question },
+                { path: 'question', component: question, meta: { title: '题库列表' } },
                 // 企业列表
-                { path: 'business', component: business },
+                { path: 'business', component: business, meta: { title: '企业列表' } },
                 // 学科列表
-                { path: 'subject', component: subject }
+                { path: 'subject', component: subject, meta: { title: '学科列表' } }
             ]
         }
     ]
 });
 // 6.导航守卫(写在创建路由对象之后)
+// 定义路由白名单数组，存放一些不需要做权限验证的路径，遇到这些白名单里的路径就直接跳转
+let whiteUrl = ['/login'];
 // 前置守卫（准备进入到某个页面触发）
 router.beforeEach((to, from, next) => {
     // 路由跳转之前调用的回调函数
@@ -61,8 +71,8 @@ router.beforeEach((to, from, next) => {
     // 开启进度条
     NProgress.start();
     // token真假判断前置
-    if (to.path == '/login') {
-        // 如果是跳转到登录页面，直接放行
+    if (whiteUrl.includes(to.path)) {
+        // 如果是跳转到路由白名单中包含的路径，直接放行
         next();
     } else {
         // 别的页面进行token真假判断
@@ -84,12 +94,15 @@ router.beforeEach((to, from, next) => {
     }
 })
 // 后置守卫（已经进入到某个页面触发）
-router.afterEach(() => {
+router.afterEach((to) => {
     // 路由跳转之后调用的回调函数
     // to:对象，去哪里  from:对象，从哪来
     // to and from are both route objects.
     // 进来以后结束进度条
     NProgress.done();
+    // 取出当前要去的页面的标签（路由元信息内容），设置给title
+    document.title = to.meta.title;
+
 })
 // 7.将路由对象暴露出去
 export default router;
