@@ -3,6 +3,12 @@ import Vue from 'vue';
 // 导入NProgress的包
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
+// 导入操作token的文件
+import { removeToken } from '@/utilis/token';
+// 导入获取用户信息的文件
+import { getInfo } from '@/api/index';
+// element-ui按需导入
+import { Message } from 'element-ui'
 // 2.导入路由
 import VueRouter from 'vue-router';
 // 3.注册路由
@@ -54,8 +60,26 @@ router.beforeEach((to, from, next) => {
     // to and from are both route objects. must call `next`.
     // 开启进度条
     NProgress.start();
-    // 调用next跳转函数
-    next();
+    // token真假判断前置
+    if (to.path == '/login') {
+        // 如果是跳转到登录页面，直接放行
+        next();
+    } else {
+        // 别的页面进行token真假判断
+        getInfo().then(res => {
+            if (res.data.code == 200) {
+                // 表示token正确，调用next跳转函数
+                next();
+            } else if (res.data.code == 206) {
+                // 错误提示(this.$message.error()是在vue中使用的，要在js文件中使用，需要单独引用)
+                Message.error('登录状态异常，请重新登录');
+                // 删除token
+                removeToken();
+                // 跳转到登录页面
+                next('/login');
+            }
+        });
+    }
 })
 // 后置守卫
 router.afterEach(() => {
