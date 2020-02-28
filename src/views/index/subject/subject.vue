@@ -29,17 +29,26 @@
     <el-card class="box-card">
       <!-- 表格 -->
       <el-table :data="tableData" style="width: 100%">
-        <el-table-column prop="id" label="序号"></el-table-column>
+        <el-table-column type="index" label="序号"></el-table-column>
         <el-table-column prop="rid" label="学科编号"></el-table-column>
         <el-table-column prop="name" label="学科名称"></el-table-column>
-        <el-table-column prop="address" label="简称"></el-table-column>
+        <el-table-column prop="short_name" label="简称"></el-table-column>
         <el-table-column prop="username" label="创建者"></el-table-column>
-        <el-table-column prop="time" label="创建时间"></el-table-column>
-        <el-table-column prop="status" label="状态"></el-table-column>
-        <el-table-column prop="option" label="操作">
+        <el-table-column prop="create_time" label="创建时间"></el-table-column>
+        <el-table-column prop="status" label="状态">
           <template slot-scope="scope">
-            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            <span v-if="scope.row.status===1">启用</span>
+            <span v-else style="color:red;">禁用</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-button type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-button
+              type="text"
+              @click="changeStatus(scope.row)"
+            >{{scope.row.status===1?'禁用':'启用'}}</el-button>
+            <el-button type="text" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -59,6 +68,8 @@
 </template>
 
 <script>
+// 导入学科列表的相关接口方法的文件
+import { subjectList, subjectStatus } from "@/api/subject.js";
 export default {
   data() {
     return {
@@ -87,7 +98,30 @@ export default {
     // 页码改变事件
     handleCurrentChange(page) {
       console.log(page);
+    },
+    // 获取学科列表数据方法
+    getList() {
+      subjectList({
+        page: 1,
+        limit: 5
+      }).then(res => {
+        // 将获取的学科列表数据赋值给tableData
+        this.tableData = res.data.data.items;
+      });
+    },
+    // 学科状态修改的点击事件
+    changeStatus(item) {
+      subjectStatus({
+        id: item.id
+      }).then(() => {
+        // 刷新表格：重新获取表格数据
+        this.getList();
+      });
     }
+  },
+  created() {
+    // 获取学科列表数据
+    this.getList();
   }
 };
 </script>
@@ -102,7 +136,7 @@ export default {
     width: 149px;
   }
 }
-.el-pagination{
+.el-pagination {
   text-align: center;
   margin-top: 30px;
 }

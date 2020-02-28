@@ -20,9 +20,19 @@ subjectRequest.interceptors.request.use(function (config) {
     return Promise.reject(error);
 });
 // 封装一个获取学科列表的接口方法
-export function subjectList(data) {
+export function subjectList(params) {
     return subjectRequest({
         url:"/subject/list",
-        data
+        method:"get",
+        // get请求参数使用params
+        params
     })
+}
+// 封装一个修改学科状态的接口方法
+export function subjectStatus(data) {
+    return subjectRequest({
+        url:'/subject/status',
+        method:'post',
+        data
+    });
 }
