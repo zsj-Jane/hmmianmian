@@ -9,6 +9,8 @@ import { removeToken } from '@/utilis/token';
 import { getInfo } from '@/api/index';
 // element-ui按需导入
 import { Message } from 'element-ui'
+// 导入vuex对象
+import store from '@/store/index.js';
 // 2.导入路由
 import VueRouter from 'vue-router';
 // 3.注册路由
@@ -33,12 +35,12 @@ const router = new VueRouter({
             path: '/login',
             component: login,
             // 路由元信息:给某个路由打标签
-            meta:{title:'登录'}
+            meta: { title: '登录' }
         },
         {
             path: '/index',
             component: index,
-            meta:{title:'首页'},
+            meta: { title: '首页' },
             // index的子路由，子路由一般不加/
             children: [
                 // 数据概览
@@ -78,6 +80,10 @@ router.beforeEach((to, from, next) => {
         // 别的页面进行token真假判断
         getInfo().then(res => {
             if (res.data.code == 200) {
+                // 将服务器返回的 用户名 取出来存在vuex对象中
+                store.commit('changeUsername', res.data.data.username);
+                // 将服务器返回的 头像 取出来存在vuex对象中
+                store.commit('changeAvatar', process.env.VUE_APP_BASE_URL + "/" + res.data.data.avatar);
                 // 表示token正确，调用next跳转函数
                 next();
             } else if (res.data.code == 206) {

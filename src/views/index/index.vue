@@ -14,8 +14,8 @@
       </div>
       <!-- 右侧 -->
       <div class="right">
-        <img :src="avatar" alt />
-        <span class="name">{{username}}，您好</span>
+        <img :src="$store.state.avatar" alt />
+        <span class="name">{{$store.state.username}}，您好</span>
         <el-button type="primary" size="mini" @click="doLogout">退出</el-button>
       </div>
     </el-header>
@@ -59,14 +59,14 @@
 
 <script>
 // 导入接口
-import { getInfo, logout } from "@/api/index.js";
+import { logout } from "@/api/index.js";
 // 导入操作token的文件
 import { removeToken, getToken } from "@/utilis/token.js";
 export default {
   data() {
     return {
-      username: "",
-      avatar: "",
+      // username: "",
+      // avatar: "",
       // 是否折叠左侧导航栏
       isCollapse: false
     };
@@ -109,27 +109,27 @@ export default {
       this.$router.push("/login");
     }
   },
-  created() {
-    // 获取用户信息
-    // 带入token给服务器请求
-    // ajax是异步请求：异步请求要等同步任务执行完毕才执行
-    getInfo().then(res => {
-      //   window.console.log(res);
-      if (res.data.code == 200) {
-        // token正确
-        this.username = res.data.data.username;
-        // 需要拼接基地址和一个/
-        this.avatar = process.env.VUE_APP_BASE_URL + "/" + res.data.data.avatar;
-      } else if (res.data.code == 206) {
-        //如果token有误，错误提示
-        this.$message.error("登录状态异常，请重新登录");
-        // 删除token
-        removeToken();
-        // 跳转到登录页面
-        this.$router.push("/login");
-      }
-    });
-  }
+  // created() {
+  //   // 获取用户信息
+  //   // 带入token给服务器请求
+  //   // ajax是异步请求：异步请求要等同步任务执行完毕才执行
+  //   getInfo().then(res => {
+  //     //   window.console.log(res);
+  //     if (res.data.code == 200) {
+  //       // token正确
+  //       this.username = res.data.data.username;
+  //       // 需要拼接基地址和一个/
+  //       this.avatar = process.env.VUE_APP_BASE_URL + "/" + res.data.data.avatar;
+  //     } else if (res.data.code == 206) {
+  //       //如果token有误，错误提示
+  //       this.$message.error("登录状态异常，请重新登录");
+  //       // 删除token
+  //       removeToken();
+  //       // 跳转到登录页面
+  //       this.$router.push("/login");
+  //     }
+  //   });
+  // }
 };
 </script>
 
