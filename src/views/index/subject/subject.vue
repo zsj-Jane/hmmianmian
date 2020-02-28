@@ -13,7 +13,7 @@
           <el-input v-model="formInline.username" class="short"></el-input>
         </el-form-item>
         <el-form-item label="状态">
-          <el-select v-model="formInline.state" placeholder="请选择状态" class="normal">
+          <el-select v-model="formInline.status" placeholder="请选择状态" class="normal">
             <el-option label="区域一" value="shanghai"></el-option>
             <el-option label="区域二" value="beijing"></el-option>
           </el-select>
@@ -35,7 +35,7 @@
         <el-table-column prop="address" label="简称"></el-table-column>
         <el-table-column prop="username" label="创建者"></el-table-column>
         <el-table-column prop="time" label="创建时间"></el-table-column>
-        <el-table-column prop="state" label="状态"></el-table-column>
+        <el-table-column prop="status" label="状态"></el-table-column>
         <el-table-column prop="option" label="操作">
           <template slot-scope="scope">
             <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -67,7 +67,7 @@ export default {
         rid: "",
         name: "",
         username: "",
-        state: ""
+        status: ""
       },
       // 表格绑定的数据源
       tableData: [],
