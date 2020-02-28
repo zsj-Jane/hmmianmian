@@ -86,6 +86,9 @@ export default {
               this.$message.success("退出成功!");
               // 删除本地token
               removeToken();
+              // 清空vuex
+              this.$store.commit('changeUsername','');
+              this.$store.commit('changeAvatar','');
               // 跳转到登录页面
               this.$router.push("/login");
             }
