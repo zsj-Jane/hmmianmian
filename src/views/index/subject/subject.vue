@@ -57,7 +57,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="page"
-        :page-sizes="[10, 20, 30, 40]"
+        :page-sizes="[5,10, 20, 30, 40]"
         :page-size="size"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
@@ -85,7 +85,7 @@ export default {
       // 分页器的当前页数
       page: 1,
       // 分页容量
-      size: 10,
+      size: 5,
       // 分页器的数据总量
       total: 0
     };
@@ -93,20 +93,33 @@ export default {
   methods: {
     // 页容量改变事件
     handleSizeChange(size) {
-      console.log(size);
+      // console.log(size);
+      // 赋值为改变后的页容量
+      this.size = size;
+      // 只要页容量改变了，都从第一页开始显示
+      this.page = 1;
+      // 根据新的页容量去重新请求数据
+      this.getList();
     },
     // 页码改变事件
     handleCurrentChange(page) {
-      console.log(page);
+      // console.log(page);
+      // 赋值为改变后的当前页数
+      this.page = page;
+      // 根据新的页码去重新请求数据
+      this.getList();
     },
     // 获取学科列表数据方法
     getList() {
       subjectList({
-        page: 1,
-        limit: 5
+        // 与 data中的分页容量、当前页保持一致
+        page: this.page,
+        limit: this.size
       }).then(res => {
-        // 将获取的学科列表数据赋值给tableData
+        // 设置数据源
         this.tableData = res.data.data.items;
+        // 设置数据总量
+        this.total = res.data.data.pagination.total;
       });
     },
     // 学科状态修改的点击事件
