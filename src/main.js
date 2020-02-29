@@ -16,6 +16,9 @@ Vue.use(ElementUI);
 import './style/base.css'
 // 导入vuex对象
 import store from './store/index';
+// 导入全局过滤器
+// 这个文件只需要保证能够执行里面的代码就行，简单导入
+import '@/filters/filters.js';
 // 创建Vue实例，挂载到ip为app的div上
 new Vue({
   // 路由对象挂载到vue实例中
