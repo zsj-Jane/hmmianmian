@@ -40,10 +40,3 @@ export function userEdit(data) {
         data
     });
 }
-// 封装一个获取token的接口方法
-// export function getToken() {
-//     return request({
-//         url:'/token',
-//         method:'post',
-//     });
-// }
