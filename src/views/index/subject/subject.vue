@@ -114,6 +114,8 @@ export default {
     // 给搜索添加点击事件
     doSearch() {
       console.log(this.formInline);
+      this.page=1;
+      // 刷新数据
       this.getList();
     },
     // 清除筛选的点击事件
