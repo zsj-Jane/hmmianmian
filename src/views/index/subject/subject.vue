@@ -21,7 +21,7 @@
         <el-form-item>
           <el-button type="primary" @click="doSearch">搜索</el-button>
           <el-button @click="clearSearch">清除</el-button>
-          <el-button type="primary" icon="el-icon-plus">新增学科</el-button>
+          <el-button type="primary" icon="el-icon-plus" @click="$refs.subjectAdd.dialogFormVisible=true">新增学科</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -64,13 +64,20 @@
         background
       ></el-pagination>
     </el-card>
+    <!-- 新增表单窗口 -->
+    <subjectAdd ref="subjectAdd"></subjectAdd>
   </div>
 </template>
 
 <script>
 // 导入学科列表的相关接口方法的文件
 import { subjectList, subjectStatus } from "@/api/subject.js";
+// 导入新增学科
+import subjectAdd from './components/subjectAdd';
 export default {
+  components:{
+    subjectAdd
+  },
   data() {
     return {
       // 行内表单绑定的数据

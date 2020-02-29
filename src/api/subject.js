@@ -36,3 +36,11 @@ export function subjectStatus(data) {
         data
     });
 }
+// 封装一个新增学科的接口方法
+export function subjectAdd(data) {
+    return subjectRequest({
+        url:'/subject/add',
+        method:'post',
+        data
+    });
+}
