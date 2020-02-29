@@ -52,7 +52,7 @@
               type="text"
               @click="changeStatus(scope.row)"
             >{{scope.row.status===1?'禁用':'启用'}}</el-button>
-            <el-button type="text" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            <el-button type="text" @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -76,7 +76,7 @@
 
 <script>
 // 导入学科列表的相关接口方法的文件
-import { subjectList, subjectStatus } from "@/api/subject.js";
+import { subjectList, subjectStatus,subjectDel } from "@/api/subject.js";
 // 导入新增学科组件
 import subjectAdd from "./components/subjectAdd";
 // 导入编辑学科组件
@@ -177,6 +177,28 @@ export default {
         // 并把记录的上一行数据记录成当前数据
         this.oldItem = item;
       }
+    },
+    // 删除按钮的点击事件
+    handleDelete(item){
+      subjectDel({
+        id:item.id
+      }).then(res=>{
+        window.console.log(res);
+        if (res.data.code==200) {
+          // 成功提示
+          this.$message.success('删除学科成功');
+          // 当前数据源（当前页的数据）只剩一条数据时，并且当前页不为第一页时，要刷新上一页的数据
+          if(this.tableData.length==1&&this.page!=1){
+            // 表示上一页
+            this.page--;
+          }
+          // 刷新表格数据（默认刷新当前页）
+          this.getList();
+        }else{
+          // 错误提示
+          this.$message.error(res.data.message);
+        }
+      })
     }
   },
   created() {
