@@ -44,3 +44,11 @@ export function subjectAdd(data) {
         data
     });
 }
+// 封装一个编辑学科的接口方法
+export function subjectEdit(data) {
+    return subjectRequest({
+        url:'/subject/edit',
+        method:'post',
+        data
+    })
+}

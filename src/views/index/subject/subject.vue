@@ -9,7 +9,7 @@
         <el-form-item label="学科名称" prop="name">
           <el-input v-model="formInline.name" class="normal"></el-input>
         </el-form-item>
-        <el-form-item label="创建者" prop="username"> 
+        <el-form-item label="创建者" prop="username">
           <el-input v-model="formInline.username" class="short"></el-input>
         </el-form-item>
         <el-form-item label="状态" prop="status">
@@ -21,7 +21,11 @@
         <el-form-item>
           <el-button type="primary" @click="doSearch">搜索</el-button>
           <el-button @click="clearSearch">清除</el-button>
-          <el-button type="primary" icon="el-icon-plus" @click="$refs.subjectAdd.dialogFormVisible=true">新增学科</el-button>
+          <el-button
+            type="primary"
+            icon="el-icon-plus"
+            @click="$refs.subjectAdd.dialogFormVisible=true"
+          >新增学科</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -43,7 +47,7 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button
               type="text"
               @click="changeStatus(scope.row)"
@@ -66,27 +70,28 @@
     </el-card>
     <!-- 新增表单窗口 -->
     <subjectAdd ref="subjectAdd"></subjectAdd>
+    <subjectEdit ref="subjectEdit"></subjectEdit>
   </div>
 </template>
 
 <script>
 // 导入学科列表的相关接口方法的文件
 import { subjectList, subjectStatus } from "@/api/subject.js";
-// 导入新增学科
-import subjectAdd from './components/subjectAdd';
+// 导入新增学科组件
+import subjectAdd from "./components/subjectAdd";
+// 导入编辑学科组件
+import subjectEdit from "./components/subjectEdit";
 export default {
-  components:{
-    subjectAdd
+  components: {
+    // 新增学科组件
+    subjectAdd,
+    // 编辑学科组件
+    subjectEdit
   },
   data() {
     return {
       // 行内表单绑定的数据
-      formInline: {
-        rid: "",
-        name: "",
-        username: "",
-        status: ""
-      },
+      formInline: {},
       // 表格绑定的数据源
       tableData: [],
       // 分页器的当前页数
@@ -94,22 +99,24 @@ export default {
       // 分页容量
       size: 5,
       // 分页器的数据总量
-      total: 0
+      total: 0,
+      // 记录上一次点击的数据
+      oldItem:""
     };
   },
   methods: {
     // 给搜索添加点击事件
-    doSearch(){
+    doSearch() {
       console.log(this.formInline);
       this.getList();
     },
     // 清除筛选的点击事件
-    clearSearch(){
+    clearSearch() {
       // 表单对象的重置方法：要想表单有重置方法，需要给每一项添加prop属性，属性值与表单对象的属性名一一对应
       this.$refs.formInline.resetFields();
       // 根据最新的表单内容重新调用请求
       // 从第一页开始重新获取所有数据
-      this.page=1;
+      this.page = 1;
       this.getList();
     },
     // 页容量改变事件
@@ -157,6 +164,19 @@ export default {
         // 刷新表格：重新获取表格数据
         this.getList();
       });
+    },
+    // 编辑按钮的点击事件
+    handleEdit(item) {
+      // 显示编辑学科对话框
+      this.$refs.subjectEdit.dialogFormVisible = true;
+      if (item!=this.oldItem) {
+        // 如果当前行不是上一次点击的那一行时
+        // 将当前编辑行的数据 赋值给 编辑学科表单
+        // 拷贝一个新的对象：解决当编辑使，同时会修改页面表格数据的问题，原因为对象传值是地址传值
+        this.$refs.subjectEdit.form = { ...item };
+        // 并把记录的上一行数据记录成当前数据
+        this.oldItem = item;
+      }
     }
   },
   created() {
