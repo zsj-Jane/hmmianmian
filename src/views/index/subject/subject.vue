@@ -2,25 +2,25 @@
   <div>
     <!-- 顶部卡片 -->
     <el-card class="box-card">
-      <el-form :inline="true" :model="formInline" class="demo-form-inline">
-        <el-form-item label="学科编号">
+      <el-form ref="formInline" :inline="true" :model="formInline" class="demo-form-inline">
+        <el-form-item label="学科编号" prop="rid">
           <el-input v-model="formInline.rid" class="short"></el-input>
         </el-form-item>
-        <el-form-item label="学科名称">
+        <el-form-item label="学科名称" prop="name">
           <el-input v-model="formInline.name" class="normal"></el-input>
         </el-form-item>
-        <el-form-item label="创建者">
+        <el-form-item label="创建者" prop="username"> 
           <el-input v-model="formInline.username" class="short"></el-input>
         </el-form-item>
-        <el-form-item label="状态">
+        <el-form-item label="状态" prop="status">
           <el-select v-model="formInline.status" placeholder="请选择状态" class="normal">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+            <el-option label="启用" value="1"></el-option>
+            <el-option label="禁用" value="0"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">搜索</el-button>
-          <el-button>清除</el-button>
+          <el-button type="primary" @click="doSearch">搜索</el-button>
+          <el-button @click="clearSearch">清除</el-button>
           <el-button type="primary" icon="el-icon-plus">新增学科</el-button>
         </el-form-item>
       </el-form>
@@ -91,6 +91,20 @@ export default {
     };
   },
   methods: {
+    // 给搜索添加点击事件
+    doSearch(){
+      console.log(this.formInline);
+      this.getList();
+    },
+    // 清除筛选的点击事件
+    clearSearch(){
+      // 表单对象的重置方法：要想表单有重置方法，需要给每一项添加prop属性，属性值与表单对象的属性名一一对应
+      this.$refs.formInline.resetFields();
+      // 根据最新的表单内容重新调用请求
+      // 从第一页开始重新获取所有数据
+      this.page=1;
+      this.getList();
+    },
     // 页容量改变事件
     handleSizeChange(size) {
       // console.log(size);
@@ -114,7 +128,13 @@ export default {
       subjectList({
         // 与 data中的分页容量、当前页保持一致
         page: this.page,
-        limit: this.size
+        limit: this.size,
+        // name:this.formInline.name,
+        // rid:this.formInline.rid,
+        // username:this.formInline.username,
+        // status:this.formInline.status,
+        // 简写模式:解构赋值
+        ...this.formInline
       }).then(res => {
         // 设置数据源
         this.tableData = res.data.data.items;
