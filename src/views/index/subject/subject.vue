@@ -87,6 +87,7 @@ import subjectAdd from "./components/subjectAdd";
 // 导入编辑学科组件
 import subjectEdit from "./components/subjectEdit";
 export default {
+  name:"subject",
   components: {
     // 新增学科组件
     subjectAdd,
