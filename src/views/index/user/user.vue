@@ -10,16 +10,17 @@
           <el-input v-model="formInline.email" class="short"></el-input>
         </el-form-item>
         <el-form-item label="角色" prop="role_id">
-          <el-select v-model="formInline.role_id" placeholder="请选择状态" class="normal">
+          <el-select v-model="formInline.role_id" placeholder="请选择角色" class="normal">
+            <el-option label="角色" value=""></el-option>
             <el-option label="管理员" value="2"></el-option>
             <el-option label="老师" value="3"></el-option>
             <el-option label="学生" value="4"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">搜索</el-button>
-          <el-button>清除</el-button>
-          <el-button type="primary" icon="el-icon-plus">新增用户</el-button>
+          <el-button type="primary" @click="doSearch">搜索</el-button>
+          <el-button @click="clearSearch">清除</el-button>
+          <el-button type="primary" icon="el-icon-plus" @click="showAdd">新增用户</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -35,14 +36,18 @@
         <el-table-column prop="remark" label="备注"></el-table-column>
         <el-table-column prop="status" label="状态">
           <template slot-scope="scope">
-            {{scope.row.status?'启用':'禁用'}}
+            <span v-if="scope.row.status===1">启用</span>
+            <span v-else style="color:red;">禁用</span>
           </template>
         </el-table-column>
         <el-table-column label="操作">
-          <template>
-            <el-button type="text">编辑</el-button>
-            <el-button type="text"></el-button>
-            <el-button type="text">删除</el-button>
+          <template slot-scope="scope">
+            <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
+            <el-button
+              type="text"
+              @click="changeStatus(scope.row)"
+            >{{scope.row.status===1?'禁用':'启用'}}</el-button>
+            <el-button type="text" @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -58,16 +63,21 @@
         background
       ></el-pagination>
     </el-card>
-    <!-- 新增表单窗口 -->
+    <!-- 对话框 -->
+    <userDialog ref="userDialog"></userDialog>
   </div>
 </template>
 
 <script>
 // 导入用户列表的接口方法
-import { userList } from "@/api/user.js";
+import { userList,userStatus,userDel } from "@/api/user.js";
+// 导入新增用户、编辑用户的组件
+import userDialog from "./components/userDialog";
 export default {
   name: "user",
-  components: {},
+  components: {
+    userDialog
+  },
   data() {
     return {
       // 行内表单绑定的数据
@@ -81,7 +91,7 @@ export default {
       // 分页器的数据总量
       total: 0,
       // 记录上一次点击的数据
-      oldItem: ""
+      oldItem: null
     };
   },
   methods: {
@@ -118,6 +128,64 @@ export default {
         // 设置数据总量
         this.total = res.data.data.pagination.total;
       });
+    },
+    // 搜索按钮的点击事件
+    doSearch() {
+      this.page = 1;
+      this.getList();
+    },
+    // 清除按钮的点击事件
+    clearSearch() {
+      this.$refs.formInline.resetFields();
+      this.page = 1;
+      this.getList();
+    },
+    // 新增用户按钮的点击事件
+    showAdd() {
+      this.$refs.userDialog.dialogFormVisible = true;
+      this.$refs.userDialog.isAdd = true;
+      // 清空表单数据
+      this.$refs.userDialog.form={};
+    },
+    // 编辑按钮的点击事件
+    handleEdit(item) {
+      this.$refs.userDialog.dialogFormVisible = true;
+      this.$refs.userDialog.isAdd = false;
+      if (item != this.oldItem) {
+        this.$refs.userDialog.form = { ...item };
+        this.oldItem = item;
+      }
+    },
+    // 修改用户状态
+    changeStatus(item){
+      userStatus({
+        id:item.id
+      }).then(()=>{
+        // 刷新数据
+        this.getList();
+      })
+    },
+    // 删除按钮的点击事件
+    handleDelete(item){
+      userDel({
+        id:item.id
+      }).then(res=>{
+        // window.console.log(res);
+        if(res.data.code==200){
+          // 成功提示
+          this.$message.success('删除用户成功');
+          // 当前数据源（当前页的数据）只剩一条数据时，并且当前页不为第一页时，要刷新上一页的数据
+          if(this.tableData.length==1&&this.page!=1){
+            // 表示上一页
+            this.page--;
+          }
+          // 默认刷新当前页数据
+          this.getList();
+        }else{
+          // 错误提示
+          this.$message.error(res.data.message);
+        }
+      })
     }
   },
   created() {
