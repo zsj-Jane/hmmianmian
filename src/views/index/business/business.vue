@@ -21,11 +21,7 @@
         <el-form-item>
           <el-button type="primary" @click="doSearch">搜索</el-button>
           <el-button @click="clearSearch">清除</el-button>
-          <el-button
-            type="primary"
-            icon="el-icon-plus"
-            @click="$refs.businessAdd.dialogFormVisible=true"
-          >新增企业</el-button>
+          <el-button type="primary" icon="el-icon-plus" @click="showAdd">新增企业</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -73,26 +69,21 @@
       ></el-pagination>
     </el-card>
     <!-- 新增企业对话框 -->
-    <businessAdd ref="businessAdd"></businessAdd>
     <!-- 编辑企业对话框 -->
-    <businessEdit ref="businessEdit"></businessEdit>
+    <businessDialog ref="businessDialog"></businessDialog>
   </div>
 </template>
 
 <script>
 // 导入获取企业列表信息接口
 import { businessList, businessStatus, businessDel } from "@/api/business.js";
-// 导入新增企业组件
-import businessAdd from "./components/businessAdd";
-// 导入编辑企业组件
-import businessEdit from "./components/businessEdit";
+// 导入新增企业、编辑企业的组件
+import businessDialog from "./components/businessDialog";
 export default {
   name: "business",
   components: {
-    // 新增企业
-    businessAdd,
-    // 编辑企业
-    businessEdit
+    // 新增企业、编辑企业
+    businessDialog
   },
   data() {
     return {
@@ -135,6 +126,15 @@ export default {
       this.page = 1;
       this.getList();
     },
+    // 新增企业的点击事件
+    showAdd() {
+      // 打开对话框
+      this.$refs.businessDialog.dialogFormVisible = true;
+      // 标记为新增状态
+      this.$refs.businessDialog.isAdd = true;
+      // 清空表单数据
+      this.$refs.businessDialog.form = {};
+    },
     // 页容量改变事件
     handleSizeChange(size) {
       // console.log(size);
@@ -155,21 +155,23 @@ export default {
     },
     // 编辑按钮的点击事件
     handleEdit(item) {
-      this.$refs.businessEdit.dialogFormVisible = true;
-      this.$refs.businessEdit.form = { ...item };
+      // 打开对话框
+      this.$refs.businessDialog.dialogFormVisible = true;
+      // 标记状态为编辑企业
+      this.$refs.businessDialog.isAdd = false;
+      if (item != this.oldItem) {
+        // 读取当前行的表单内容
+        this.$refs.businessDialog.form = { ...item };
+        this.oldItem=item;
+      }
     },
     // 修改企业状态的点击事件
     changeStatus(item) {
       businessStatus({
         id: item.id
       }).then(() => {
-        // window.console.log(res);
-        if (item != this.oldItem) {
-          // 刷新表格数据
-          this.getList();
-          // 并把记录的上一行数据记录成当前数据
-          this.oldItem = item;
-        }
+        // 刷新表格数据
+        this.getList();
       });
     },
     // 删除按钮的点击事件
