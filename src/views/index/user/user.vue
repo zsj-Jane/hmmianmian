@@ -4,13 +4,13 @@
     <el-card class="box-card">
       <el-form ref="formInline" :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item label="用户名称" prop="username">
-          <el-input v-model="formInline.username" class="normal"></el-input>
+          <el-input v-model="formInline.username"></el-input>
         </el-form-item>
         <el-form-item label="用户邮箱" prop="email">
-          <el-input v-model="formInline.email" class="short"></el-input>
+          <el-input v-model="formInline.email"></el-input>
         </el-form-item>
         <el-form-item label="角色" prop="role_id">
-          <el-select v-model="formInline.role_id" placeholder="请选择角色" class="normal">
+          <el-select v-model="formInline.role_id" placeholder="请选择角色">
             <el-option label="角色" value=""></el-option>
             <el-option label="管理员" value="2"></el-option>
             <el-option label="老师" value="3"></el-option>
@@ -142,17 +142,24 @@ export default {
     },
     // 新增用户按钮的点击事件
     showAdd() {
+      // 打开新增用户的对话框
       this.$refs.userDialog.dialogFormVisible = true;
+      // 设置对话框为新增用户的对话框
       this.$refs.userDialog.isAdd = true;
       // 清空表单数据
       this.$refs.userDialog.form={};
     },
     // 编辑按钮的点击事件
     handleEdit(item) {
+      // 打开编辑按钮的对话框
       this.$refs.userDialog.dialogFormVisible = true;
+      // 设置对话框为编辑用户的对话框
       this.$refs.userDialog.isAdd = false;
+      // 判断这次点击的项是否为上一次点击的项
       if (item != this.oldItem) {
+        // 若两次点击的都是一样的，表格内容不变
         this.$refs.userDialog.form = { ...item };
+        // 保存当前点击项的内容
         this.oldItem = item;
       }
     },
@@ -198,12 +205,6 @@ export default {
 <style lang="less">
 .box-card {
   margin-bottom: 19px;
-  .short {
-    width: 100px;
-  }
-  .normal {
-    width: 149px;
-  }
 }
 .el-pagination {
   text-align: center;

@@ -14,7 +14,6 @@
       </el-form-item>
       <el-form-item label="角色" prop="role_id" :label-width="formLabelWidth">
         <el-select v-model="form.role_id" placeholder="请选择角色">
-          <el-option label="角色" value></el-option>
           <el-option label="管理员" value="2"></el-option>
           <el-option label="老师" value="3"></el-option>
           <el-option label="学生" value="4"></el-option>
@@ -42,7 +41,7 @@
 // 导入新增用户,编辑用户的方法
 import { userAdd, userEdit } from "@/api/user.js";
 export default {
-  name: "businessDialog",
+  name: "userDialog",
   data() {
     return {
       // 对话框是否显示
@@ -56,9 +55,23 @@ export default {
         username: [
           { required: true, message: "用户名不能为空", trigger: "blur" }
         ],
-        email: [{ required: true, message: "邮箱不能为空", trigger: "blur" }],
-        phone: [{ required: true, message: "电话不能为空", trigger: "blur" }],
-        role_id: [{ required: true, message: "角色不能为空", trigger: "blur" }]
+        email: [
+          { required: true, message: "邮箱不能为空", trigger: "blur" },
+          {
+            pattern: /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
+            message: "邮箱格式不正确",
+            trigger: "blur"
+          }
+        ],
+        phone: [
+          { required: true, message: "电话不能为空", trigger: "blur" },
+          {
+            pattern: /^(13[0-9]|14[5|7]|15[0|1|2|3|4|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$/,
+            message: "电话格式不正确",
+            trigger: "blur"
+          }
+        ],
+        role_id: [{ required: true, message: "角色不能为空", trigger: "change" }]
       },
       // 判断是否为新增页面，true则为新增页面，false则为编辑页面
       isAdd: true
