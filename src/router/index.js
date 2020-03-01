@@ -80,13 +80,25 @@ router.beforeEach((to, from, next) => {
         // 别的页面进行token真假判断
         getInfo().then(res => {
             if (res.data.code == 200) {
-                // 将服务器返回的 用户名 取出来存在vuex对象中
-                store.commit('changeUsername', res.data.data.username);
-                // 将服务器返回的 头像 取出来存在vuex对象中
-                store.commit('changeAvatar', process.env.VUE_APP_BASE_URL + "/" + res.data.data.avatar);
-                // 表示token正确，调用next跳转函数
-                next();
-            } else if (res.data.code == 206) {
+                if (res.data.data.status == 1) {
+                    // 将服务器返回的 用户名 取出来存在vuex对象中
+                    store.commit('changeUsername', res.data.data.username);
+                    // 将服务器返回的 头像 取出来存在vuex对象中
+                    store.commit('changeAvatar', process.env.VUE_APP_BASE_URL + "/" + res.data.data.avatar);
+                    // 登录成功提示
+                    Message.success('登录成功');
+                    // 表示token正确，调用next跳转函数
+                    next();
+                } else {
+                    // 禁用警告
+                    Message.warning('账号被禁用，请与管理员联系！');
+                    // 手动结束进度条(因为本来要进入index页面，但是token出错了，进度条没有结束，要手动结束)
+                    NProgress.done();
+                    // 跳转到登录页面
+                    next('/login');
+                }
+
+            } else {
                 // 错误提示(this.$message.error()是在vue中使用的，要在js文件中使用，需要单独引用)
                 Message.error('登录状态异常，请重新登录');
                 // 删除token

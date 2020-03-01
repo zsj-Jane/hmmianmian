@@ -112,7 +112,7 @@ export default {
               // 存储token
               setToken(res.data.data.token);
               // 登录成功提示
-              this.$message.success('登录成功');
+              // this.$message.success('登录成功');
               // 跳转页面到首页
               this.$router.push('/index');
             }else{
