@@ -25,26 +25,16 @@
         <!-- 导航菜单栏 -->
         <!-- router属性为true，代表启用路由模式，效果：点击菜单会进行路由跳转，以被点击的菜单的跳index属性作为路径跳转 -->
         <el-menu router default-active="1" class="el-menu-vertical-demo" :collapse="isCollapse">
-          <el-menu-item index="/index/chart" v-if="['超级管理员', '管理员'].includes($store.state.role)">
-            <i class="el-icon-pie-chart"></i>
-            <span slot="title">数据概览</span>
-          </el-menu-item>
-          <el-menu-item index="/index/user" v-if="['超级管理员', '管理员'].includes($store.state.role)">
-            <i class="el-icon-user"></i>
-            <span slot="title">用户列表</span>
-          </el-menu-item>
-          <el-menu-item index="/index/question" v-if="['超级管理员', '管理员', '老师', '学生'].includes($store.state.role)">
-            <i class="el-icon-edit-outline"></i>
-            <span slot="title">题库列表</span>
-          </el-menu-item>
-          <el-menu-item index="/index/business" v-if="['超级管理员', '管理员', '老师'].includes($store.state.role)">
-            <i class="el-icon-office-building"></i>
-            <span slot="title">企业列表</span>
-          </el-menu-item>
-          <el-menu-item index="/index/subject" v-if="['超级管理员', '管理员', '老师', '学生'].includes($store.state.role)">
-            <i class="el-icon-notebook-2"></i>
-            <span slot="title">学科列表</span>
-          </el-menu-item>
+          <template v-for="(item, index) in childrenRoutes">
+            <el-menu-item
+              :key="index"
+              :index="'/index/'+item.path"
+              v-if="item.meta.roles.includes($store.state.role)"
+            >
+              <i :class="item.meta.icon"></i>
+              <span slot="title">{{item.meta.title}}</span>
+            </el-menu-item>
+          </template>
         </el-menu>
       </el-aside>
       <!-- 右侧部分 -->
@@ -62,13 +52,17 @@
 import { logout } from "@/api/index.js";
 // 导入操作token的文件
 import { removeToken, getToken } from "@/utilis/token.js";
+// 导入子路由规则
+import childrenRoutes from "@/router/childrenRoutes.js";
 export default {
   data() {
     return {
       // username: "",
       // avatar: "",
       // 是否折叠左侧导航栏
-      isCollapse: false
+      isCollapse: false,
+      // 子路由规则
+      childrenRoutes
     };
   },
   methods: {
@@ -87,8 +81,9 @@ export default {
               // 删除本地token
               removeToken();
               // 清空vuex
-              this.$store.commit('changeUsername','');
-              this.$store.commit('changeAvatar','');
+              this.$store.commit("changeUsername", "");
+              this.$store.commit("changeAvatar", "");
+              this.$store.commit('changeRole',"");
               // 跳转到登录页面
               this.$router.push("/login");
             }
@@ -111,7 +106,7 @@ export default {
       // 跳转到登录页面
       this.$router.push("/login");
     }
-  },
+  }
   // created() {
   //   // 获取用户信息
   //   // 带入token给服务器请求
