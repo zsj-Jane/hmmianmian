@@ -35,24 +35,65 @@ const router = new VueRouter({
             path: '/login',
             component: login,
             // 路由元信息:给某个路由打标签
-            meta: { title: '登录' }
+            meta: {
+                title: '登录',
+                roles: ['超级管理员', '管理员', '老师', '学生']
+            }
         },
         {
             path: '/index',
             component: index,
-            meta: { title: '首页' },
+            meta: {
+                title: '首页',
+                roles: ['超级管理员', '管理员', '老师', '学生']
+            },
             // index的子路由，子路由一般不加/
             children: [
                 // 数据概览
-                { path: 'chart', component: chart, meta: { title: '数据概览' } },
+                {
+                    path: 'chart',
+                    component: chart,
+                    meta: {
+                        title: '数据概览',
+                        roles: ['超级管理员', '管理员']
+                    }
+                },
                 // 用户列表
-                { path: 'user', component: user, meta: { title: '用户列表' } },
+                {
+                    path: 'user',
+                    component: user,
+                    meta: {
+                        title: '用户列表',
+                        roles: ['超级管理员', '管理员']
+                    }
+                },
                 // 题库列表
-                { path: 'question', component: question, meta: { title: '题库列表' } },
+                {
+                    path: 'question',
+                    component: question,
+                    meta: {
+                        title: '题库列表',
+                        roles: ['超级管理员', '管理员', '老师', '学生']
+                    }
+                },
                 // 企业列表
-                { path: 'business', component: business, meta: { title: '企业列表' } },
+                {
+                    path: 'business',
+                    component: business,
+                    meta: {
+                        title: '企业列表',
+                        roles: ['超级管理员', '管理员', '老师']
+                    }
+                },
                 // 学科列表
-                { path: 'subject', component: subject, meta: { title: '学科列表' } }
+                {
+                    path: 'subject',
+                    component: subject,
+                    meta: {
+                        title: '学科列表',
+                        roles: ['超级管理员', '管理员', '老师', '学生']
+                    }
+                }
             ]
         }
     ]
@@ -80,15 +121,29 @@ router.beforeEach((to, from, next) => {
         // 别的页面进行token真假判断
         getInfo().then(res => {
             if (res.data.code == 200) {
+                // 判断当前登录账号的用户状态是否为 启用
                 if (res.data.data.status == 1) {
                     // 将服务器返回的 用户名 取出来存在vuex对象中
                     store.commit('changeUsername', res.data.data.username);
                     // 将服务器返回的 头像 取出来存在vuex对象中
                     store.commit('changeAvatar', process.env.VUE_APP_BASE_URL + "/" + res.data.data.avatar);
-                    // 登录成功提示
-                    Message.success('登录成功');
-                    // 表示token正确，调用next跳转函数
-                    next();
+                    // 只有从登录页面跳转过来的，才提示登录成功
+                    if (from.paht == '/login') {
+                        // 登录成功提示
+                        Message.success('登录成功');
+                    }
+                    // 判断要去的页面的可访问角色中，是否包含当前登录账号的角色
+                    if (to.meta.roles.includes(res.data.data.role)) {
+                        // 表示token正确、状态为启用、拥有访问权限，调用next跳转函数
+                        next();
+                    } else {
+                        // 警告提示
+                        Message.warning('该账号没有访问权限，请与管理员联系');
+                        // 手动结束进度条
+                        NProgress.done();
+                        // 没有权限访问，就跳转回原来的页面
+                        next(from.path);
+                    }
                 } else {
                     // 禁用警告
                     Message.warning('账号被禁用，请与管理员联系！');
