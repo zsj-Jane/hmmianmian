@@ -12,8 +12,8 @@
       <el-form-item label="电话" prop="phone" :label-width="formLabelWidth">
         <el-input v-model="form.phone" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="角色" prop="role_id" :label-width="formLabelWidth">
-        <el-select v-model="form.role_id" placeholder="请选择角色">
+      <el-form-item label="角色" prop="role" :label-width="formLabelWidth">
+        <el-select v-model="form.role" placeholder="请选择角色" @change="form.rold_id=form.role;">
           <el-option label="管理员" value="2"></el-option>
           <el-option label="老师" value="3"></el-option>
           <el-option label="学生" value="4"></el-option>
@@ -71,7 +71,7 @@ export default {
             trigger: "blur"
           }
         ],
-        role_id: [{ required: true, message: "角色不能为空", trigger: "change" }]
+        role: [{ required: true, message: "角色不能为空", trigger: "change" }]
       },
       // 判断是否为新增页面，true则为新增页面，false则为编辑页面
       isAdd: true
