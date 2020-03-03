@@ -17,7 +17,7 @@ export function questionAdd(data) {
     });
 }
 // 封装一个获取题目信息的接口方法
-export function questionOne(data) {
+export function questionInfo(data) {
     return request({
         url:'/question/one',
         method:'post',
