@@ -50,14 +50,14 @@
             <span v-else style="color:red;">禁用</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" v-if="['超级管理员', '管理员', '老师'].includes($store.state.role)">
+        <el-table-column label="操作" v-if="childrenRoutes[3].meta.roles.includes($store.state.role)">
           <template slot-scope="scope">
             <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button
               type="text"
               @click="changeStatus(scope.row)"
             >{{scope.row.status===1?'禁用':'启用'}}</el-button>
-            <el-button type="text" @click="handleDelete(scope.row)" v-if="['超级管理员', '管理员'].includes($store.state.role)">删除</el-button>
+            <el-button type="text" @click="handleDelete(scope.row)" v-if="childrenRoutes[0].meta.roles.includes($store.state.role)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -86,6 +86,8 @@ import { subjectList, subjectStatus,subjectDel } from "@/api/subject.js";
 import subjectAdd from "./components/subjectAdd";
 // 导入编辑学科组件
 import subjectEdit from "./components/subjectEdit";
+// 导入index子路由规则
+import childrenRoutes from '@/router/childrenRoutes.js';
 export default {
   name:"subject",
   components: {
@@ -107,7 +109,9 @@ export default {
       // 分页器的数据总量
       total: 0,
       // 记录上一次点击的数据
-      oldItem:""
+      oldItem:"",
+      // index子路由规则
+      childrenRoutes
     };
   },
   methods: {
