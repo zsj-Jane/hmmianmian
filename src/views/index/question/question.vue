@@ -5,14 +5,8 @@
     <el-card class="box-card">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item label="学科">
-          <el-select v-model="formInline.subject" placeholder="请选择学科">
-            <el-option
-              v-for="(item, index) in subjectList"
-              :key="index"
-              :label="item.name"
-              :value="item.id"
-            ></el-option>
-          </el-select>
+          <!-- 学科下拉框组件 -->
+          <subjectSelect v-model="formInline.subject"></subjectSelect>
         </el-form-item>
         <el-form-item label="阶段">
           <el-select v-model="formInline.step" placeholder="请选择阶段">
@@ -22,14 +16,8 @@
           </el-select>
         </el-form-item>
         <el-form-item label="企业">
-          <el-select v-model="formInline.enterprise" placeholder="请选择企业">
-            <el-option
-              v-for="(item, index) in businessList"
-              :key="index"
-              :label="item.name"
-              :value="item.id"
-            ></el-option>
-          </el-select>
+          <!-- 企业下拉框组件 -->
+          <businessSelect v-model="formInline.enterprise"></businessSelect>
         </el-form-item>
         <el-form-item label="题型">
           <el-select v-model="formInline.type" placeholder="请选择题型">
@@ -128,10 +116,6 @@
 </template>
 
 <script>
-// 导入获取学科列表
-import { subjectList } from "@/api/subject.js";
-// 导入获取企业列表
-import { businessList } from "@/api/business.js";
 // 导入题库相关接口
 import { questionList } from "@/api/question.js";
 export default {
@@ -147,11 +131,7 @@ export default {
       // 分页容量
       size: 5,
       // 分页器的数据总量
-      total: 0,
-      // 学科列表数据
-      subjectList: [],
-      // 企业列表数据
-      businessList: []
+      total: 0,     
     };
   },
   methods: {
@@ -190,18 +170,6 @@ export default {
     }
   },
   created() {
-    // 获取学科列表数据(启用的)
-    subjectList({
-      status: 1
-    }).then(res => {
-      this.subjectList = res.data.data.items;
-    });
-    // 获取企业列表数据(启用的)
-    businessList({
-      status: 1
-    }).then(res => {
-      this.businessList = res.data.data.items;
-    });
     // 获取题库列表数据
     this.getList();
   },

@@ -19,6 +19,14 @@ import store from './store/index';
 // 导入全局过滤器
 // 这个文件只需要保证能够执行里面的代码就行，简单导入
 import '@/filters/filters.js';
+// 导入全局组件
+// 导入学科下拉框组件
+import subjectSelect from './components/subjectSelect.vue';
+// 导入企业下拉框组件
+import businessSelect from './components/businessSelect.vue';
+// 注册全局组件
+Vue.component('subjectSelect',subjectSelect);
+Vue.component('businessSelect',businessSelect);
 // 创建Vue实例，挂载到ip为app的div上
 new Vue({
   // 路由对象挂载到vue实例中
