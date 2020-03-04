@@ -58,7 +58,7 @@
         <el-form-item>
           <el-button type="primary" @click="doSearch">搜索</el-button>
           <el-button>清除</el-button>
-          <el-button type="primary" icon="el-icon-plus">新增试题</el-button>
+          <el-button type="primary" icon="el-icon-plus" @click="showAdd">新增试题</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -112,14 +112,21 @@
         background
       ></el-pagination>
     </el-card>
+    <!-- 题库新增对话框 -->
+    <questionAdd ref="questionAdd"></questionAdd>
   </div>
 </template>
 
 <script>
 // 导入题库相关接口
 import { questionList } from "@/api/question.js";
+// 导入题库新增对话框组件
+import questionAdd from "./components/questionAdd";
 export default {
   name: "question",
+  components: {
+    questionAdd
+  },
   data() {
     return {
       // 跟行内表单绑定的数据
@@ -131,7 +138,7 @@ export default {
       // 分页容量
       size: 5,
       // 分页器的数据总量
-      total: 0,     
+      total: 0
     };
   },
   methods: {
@@ -151,6 +158,10 @@ export default {
     doSearch() {
       this.page = 1;
       this.getList();
+    },
+    // 新增试题按钮的点击事件
+    showAdd() {
+      this.$refs.questionAdd.dialogFormVisible = true;
     },
     // 页容量改变事件
     handleSizeChange(size) {
@@ -196,19 +207,21 @@ export default {
     padding-left: 0;
     padding-top: 22px;
   }
-  .el-form-item {
-    .el-form-item__label {
-      padding-right: 30px;
-      padding-left: 30px;
-    }
-    &:not(:last-child) {
-      .el-form-item__content {
-        width: 217px;
+  .el-form--inline {
+    .el-form-item {
+      .el-form-item__label {
+        padding-right: 30px;
+        padding-left: 30px;
       }
-    }
-    &.title_item {
-      .el-form-item__content {
-        width: 388px;
+      &:not(:last-child) {
+        .el-form-item__content {
+          width: 217px;
+        }
+      }
+      &.title_item {
+        .el-form-item__content {
+          width: 388px;
+        }
       }
     }
   }
