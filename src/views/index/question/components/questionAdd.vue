@@ -76,7 +76,8 @@
         <el-divider></el-divider>
       </el-form-item>
       <el-form-item label="解析视频" :label-width="formLabelWidth">
-        <el-button type="primary">点击上传</el-button>
+        <!-- 视频上传组件 -->
+        <videoUpload :video.sync="form.video" ></videoUpload>
       </el-form-item>
       <el-form-item>
         <!-- 分割线 -->
@@ -107,6 +108,8 @@ import chinaArea from "./chinaArea.vue";
 import wangEditor from "./wangEditor.vue";
 // 导入选项组件
 import optionItem from "./optionItem.vue";
+// 导入视频上传组件
+import videoUpload from './videoUpload.vue';
 export default {
   name: "questionAdd",
   components: {
@@ -115,7 +118,9 @@ export default {
     // 富文本编辑 组件
     wangEditor,
     // 选项组件
-    optionItem
+    optionItem,
+    // 视频上传组件
+    videoUpload,
   },
   data() {
     return {
@@ -136,27 +141,27 @@ export default {
           {
             label: "A",
             text: "狗不理",
-            image: "upload/20191129/fd5f03a07d95e3948860240564b180e4.jpeg"
+            image: ""
           },
           {
             label: "B",
             text: "猫不理",
-            image: "upload/20191129/e93e7bb72accda7f3159cdabc4203991.jpeg"
+            image: ""
           },
           {
             label: "C",
             text: "麻花",
-            image: "upload/20191129/b7caf98be9d0aa6764b0112ba0dfa19e.jpeg"
+            image: ""
           },
           {
             label: "D",
             text: "炸酱面",
-            image: "upload/20191129/4067f19ab53a5e8388ad3459e23110f0.jpeg"
+            image: ""
           }
-        ]
+        ],
+        // 存视频地址
+        video:"",
       },
-      // 上传的文件路径
-      imageUrl: "",
       // 表单标签宽度
       formLabelWidth: "100px",
       // 表单验证规则
@@ -195,6 +200,9 @@ export default {
   .el-divider {
     width: 832px;
     margin: 48px auto;
+  }
+  .avatar-uploader{
+    text-align: left;
   }
 }
 </style>
