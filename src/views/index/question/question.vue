@@ -3,23 +3,23 @@
   <div class="question-wrap">
     <!-- 顶部卡片 -->
     <el-card class="box-card">
-      <el-form :inline="true" :model="formInline" class="demo-form-inline">
-        <el-form-item label="学科">
+      <el-form ref="formInline" :inline="true" :model="formInline" class="demo-form-inline">
+        <el-form-item label="学科" prop="subject">
           <!-- 学科下拉框组件 -->
-          <subjectSelect v-model="formInline.subject"></subjectSelect>
+          <subjectSelect v-model="formInline.subject" :isSearch="true"></subjectSelect>
         </el-form-item>
-        <el-form-item label="阶段">
+        <el-form-item label="阶段" prop="step">
           <el-select v-model="formInline.step" placeholder="请选择阶段">
             <el-option label="初级" value="1"></el-option>
             <el-option label="中级" value="2"></el-option>
             <el-option label="高级" value="3"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="企业">
+        <el-form-item label="企业" prop="enterprise">
           <!-- 企业下拉框组件 -->
-          <businessSelect v-model="formInline.enterprise"></businessSelect>
+          <businessSelect v-model="formInline.enterprise" :isSearch="true"></businessSelect>
         </el-form-item>
-        <el-form-item label="题型">
+        <el-form-item label="题型" prop="type">
           <el-select v-model="formInline.type" placeholder="请选择题型">
             <el-option label="单选" value="1"></el-option>
             <el-option label="多选" value="2"></el-option>
@@ -27,23 +27,23 @@
           </el-select>
         </el-form-item>
         <br />
-        <el-form-item label="难度">
+        <el-form-item label="难度" prop="difficulty">
           <el-select v-model="formInline.difficulty" placeholder="请选择难度">
             <el-option label="简单" value="1"></el-option>
             <el-option label="一般" value="2"></el-option>
             <el-option label="困难" value="3"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="作者">
+        <el-form-item label="作者" prop="username">
           <el-input v-model="formInline.username" placeholder="作者"></el-input>
         </el-form-item>
-        <el-form-item label="状态">
+        <el-form-item label="状态" prop="status">
           <el-select v-model="formInline.status" placeholder="请选择状态">
             <el-option label="启用" value="1"></el-option>
             <el-option label="禁用" value="0"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="日期">
+        <el-form-item label="日期" prop="create_date">
           <el-date-picker
             value-format="yyyy-MM-DD"
             v-model="formInline.create_date"
@@ -52,12 +52,12 @@
           ></el-date-picker>
         </el-form-item>
         <br />
-        <el-form-item label="标题" class="title_item">
+        <el-form-item label="标题" class="title_item" prop="title">
           <el-input v-model="formInline.title"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="doSearch">搜索</el-button>
-          <el-button>清除</el-button>
+          <el-button @click="clearSearch">清除</el-button>
           <el-button type="primary" icon="el-icon-plus" @click="showAdd">新增试题</el-button>
         </el-form-item>
       </el-form>
@@ -112,8 +112,10 @@
         background
       ></el-pagination>
     </el-card>
-    <!-- 题库新增对话框 -->
+    <!-- 题库新增对话框 组件-->
     <questionAdd ref="questionAdd"></questionAdd>
+    <!-- 题库 编辑对话框组件 -->
+    <questionEdit ref="questionEdit"></questionEdit>
   </div>
 </template>
 
@@ -121,11 +123,16 @@
 // 导入题库相关接口
 import { questionList } from "@/api/question.js";
 // 导入题库新增对话框组件
-import questionAdd from "./components/questionAdd";
+import questionAdd from "./components/questionAdd.vue";
+// 导入题库编辑对话框组件
+import questionEdit from './components/questionEdit.vue';
 export default {
   name: "question",
   components: {
-    questionAdd
+    // 题库新增对话框组件
+    questionAdd,
+    // 题库编辑对话框组件
+    questionEdit
   },
   data() {
     return {
@@ -159,9 +166,30 @@ export default {
       this.page = 1;
       this.getList();
     },
+    // 清除按钮的点击事件
+    clearSearch(){
+      // 重置表单
+      this.$refs.formInline.resetFields();
+      // 从第一页开始重新刷新
+      this.page=1;
+      // 刷新数据
+      this.getList();
+    },
     // 新增试题按钮的点击事件
     showAdd() {
+      // 打开新增试题对话框
       this.$refs.questionAdd.dialogFormVisible = true;
+    },
+    // 编辑按钮的点击事件
+    handleEdit(item){
+      // 打开编辑试题对话框
+      this.$refs.questionEdit.dialogFormVisible=true;
+      // 将当前行数据 赋值 给 对话框的表单
+      this.$refs.questionEdit.form = {...item};
+      // 把city从字符串转成数组
+      this.$refs.questionEdit.form.city = item.city.split(',');
+      // 把multiple_select_answer从字符串转成数组
+      this.$refs.questionEdit.form.multiple_select_answer=item.multiple_select_answer.split(',');
     },
     // 页容量改变事件
     handleSizeChange(size) {

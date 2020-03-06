@@ -1,5 +1,6 @@
 <template>
   <el-select v-model="subject" placeholder="请选择学科" @change="selChange">
+    <el-option v-if="isSearch" value="">所有学科</el-option>
     <el-option
       v-for="(item, index) in subjectList"
       :key="index"
@@ -19,6 +20,10 @@ export default {
     value: {
         // 默认值为空
         default:""
+    },
+    isSearch:{
+      type:Boolean,
+      default:false
     }
   },
   data() {
@@ -27,6 +32,12 @@ export default {
       // 学科列表数据
       subjectList: []
     };
+  },
+  watch: {
+    // 监听学科下拉框的值，只要下拉框的值改变了，这里subject的值跟着改变
+    value(val){
+      this.subject=val;
+    }
   },
   methods: {
     //   企业下拉框的值改变事件
