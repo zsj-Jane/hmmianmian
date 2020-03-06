@@ -1,5 +1,5 @@
 <template>
-  <el-dialog class="questionAdd" fullscreen title="新增题库" :visible.sync="dialogFormVisible">
+  <el-dialog destroy-on-close class="questionAdd" fullscreen title="新增题库" :visible.sync="dialogFormVisible">
     <el-form :model="form" :rules="rules" ref="form">
       <el-form-item label="学科" prop="subject" :label-width="formLabelWidth">
         <!-- 学科下拉框组件 -->
@@ -40,10 +40,11 @@
         <!-- 分割线 -->
         <el-divider></el-divider>
       </el-form-item>
-      <el-form-item label="试题标题" :label-width="formLabelWidth">
+      <el-form-item label="试题标题" prop="title" :label-width="formLabelWidth">
+        <!-- 富文本编辑器组件 -->
         <wangEditor v-model="form.title"></wangEditor>
       </el-form-item>
-      <el-form-item label="单选" v-if="form.type==1" :label-width="formLabelWidth">
+      <el-form-item label="单选" v-if="form.type==1" prop="single_select_answer" :label-width="formLabelWidth">
         <el-radio-group v-model="form.single_select_answer">
           <!-- 选项组件 -->
           <optionItem
@@ -56,8 +57,9 @@
           ></optionItem>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="多选" v-else-if="form.type==2" :label-width="formLabelWidth">
+      <el-form-item label="多选" v-else-if="form.type==2" prop="multiple_select_answer" :label-width="formLabelWidth">
         <el-checkbox-group v-model="form.multiple_select_answer">
+          <!-- 选项组件 -->
           <optionItem
             v-for="(item, index) in form.select_options"
             :key="index"
@@ -68,30 +70,31 @@
           ></optionItem>
         </el-checkbox-group>
       </el-form-item>
-      <el-form-item label="简答" v-else :label-width="formLabelWidth">
+      <el-form-item label="简答" prop="short_answer" v-else :label-width="formLabelWidth">
         <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="form.short_answer"></el-input>
       </el-form-item>
       <el-form-item>
         <!-- 分割线 -->
         <el-divider></el-divider>
       </el-form-item>
-      <el-form-item label="解析视频" :label-width="formLabelWidth">
+      <el-form-item label="解析视频" prop="video" :label-width="formLabelWidth">
         <!-- 视频上传组件 -->
-        <videoUpload :video.sync="form.video" ></videoUpload>
+        <videoUpload :video.sync="form.video"></videoUpload>
       </el-form-item>
       <el-form-item>
         <!-- 分割线 -->
         <el-divider></el-divider>
       </el-form-item>
-      <el-form-item label="答案解析" :label-width="formLabelWidth">
+      <el-form-item label="答案解析" prop="answer_analyze" :label-width="formLabelWidth">
+        <!-- 富文本编辑器组件 -->
         <wangEditor v-model="form.answer_analyze"></wangEditor>
       </el-form-item>
       <el-form-item>
         <!-- 分割线 -->
         <el-divider></el-divider>
       </el-form-item>
-      <el-form-item label="试题备注" :label-width="formLabelWidth">
-        <el-input v-model="form.remark"></el-input>
+      <el-form-item label="试题备注" prop="remark" :label-width="formLabelWidth">
+        <el-input type="textarea" :rows="2" v-model="form.remark"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -109,7 +112,9 @@ import wangEditor from "./wangEditor.vue";
 // 导入选项组件
 import optionItem from "./optionItem.vue";
 // 导入视频上传组件
-import videoUpload from './videoUpload.vue';
+import videoUpload from "./videoUpload.vue";
+// 导入题库的接口
+import {questionAdd} from '@/api/question.js';
 export default {
   name: "questionAdd",
   components: {
@@ -120,7 +125,7 @@ export default {
     // 选项组件
     optionItem,
     // 视频上传组件
-    videoUpload,
+    videoUpload
   },
   data() {
     return {
@@ -160,12 +165,26 @@ export default {
           }
         ],
         // 存视频地址
-        video:"",
+        video: ""
       },
       // 表单标签宽度
-      formLabelWidth: "100px",
+      formLabelWidth: "110px",
       // 表单验证规则
-      rules: {}
+      rules: {
+        title: [{ required: true, message: "标题不能为空", trigger: "blur" }],
+        subject: [{ required: true, message: "学科不能为空", trigger: "change" }],
+        step: [{ required: true, message: "阶段不能为空", trigger: "change" }],
+        enterprise: [{ required: true, message: "企业不能为空", trigger: "change" }],
+        city: [{ required: true, message: "城市不能为空", trigger: "change" }],
+        type: [{ required: true, message: "题型不能为空", trigger: "change" }],
+        difficulty: [{ required: true, message: "难度不能为空", trigger: "change" }],
+        single_select_answer: [{ required: true, message: "单选题答案不能为空", trigger: "change" }],
+        multiple_select_answer: [{ required: true, message: "多选题答案不能为空", trigger: "change" }],
+        short_answer: [{ required: true, message: "简答题答案不能为空", trigger: "blur" }],
+        answer_analyze: [{ required: true, message: "答案解析不能为空", trigger: "blur" }],
+        remark: [{ required: true, message: "试题备注不能为空", trigger: "blur" }],
+        select_options: [{ required: true, message: "选项不能为空", trigger: "change" }]
+      }
     };
   },
   methods: {
@@ -175,6 +194,22 @@ export default {
       this.$refs.form.validate(v => {
         if (v) {
           window.console.log("全部通过");
+          questionAdd(this.form).then(res=>{
+            window.console.log(res);
+            if (res.data.code==200) {
+              // 成功提示
+              this.$message.success('新增试题成功');
+              // 关闭对话框
+              this.dialogFormVisible=false;
+              // 重置表单(只能重置表单元素，对自己写的组件没有作用)
+              this.$refs.form.resetFields(); 
+              // 刷新表格列表
+              this.$parent.getList();
+            }else{
+              // 错误提示
+              this.$message.error(res.data.message);
+            }
+          })
         }
       });
     }
@@ -201,8 +236,11 @@ export default {
     width: 832px;
     margin: 48px auto;
   }
-  .avatar-uploader{
+  .avatar-uploader {
     text-align: left;
+  }
+  .el-dialog__footer {
+    text-align: center;
   }
 }
 </style>
