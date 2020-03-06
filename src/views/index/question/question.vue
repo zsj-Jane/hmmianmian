@@ -121,11 +121,11 @@
 
 <script>
 // 导入题库相关接口
-import { questionList } from "@/api/question.js";
+import { questionList, questionStatus, questionDel } from "@/api/question.js";
 // 导入题库新增对话框组件
 import questionAdd from "./components/questionAdd.vue";
 // 导入题库编辑对话框组件
-import questionEdit from './components/questionEdit.vue';
+import questionEdit from "./components/questionEdit.vue";
 export default {
   name: "question",
   components: {
@@ -167,11 +167,11 @@ export default {
       this.getList();
     },
     // 清除按钮的点击事件
-    clearSearch(){
+    clearSearch() {
       // 重置表单
       this.$refs.formInline.resetFields();
       // 从第一页开始重新刷新
-      this.page=1;
+      this.page = 1;
       // 刷新数据
       this.getList();
     },
@@ -181,15 +181,46 @@ export default {
       this.$refs.questionAdd.dialogFormVisible = true;
     },
     // 编辑按钮的点击事件
-    handleEdit(item){
+    handleEdit(item) {
       // 打开编辑试题对话框
-      this.$refs.questionEdit.dialogFormVisible=true;
+      this.$refs.questionEdit.dialogFormVisible = true;
       // 将当前行数据 赋值 给 对话框的表单
-      this.$refs.questionEdit.form = {...item};
+      this.$refs.questionEdit.form = { ...item };
       // 把city从字符串转成数组
-      this.$refs.questionEdit.form.city = item.city.split(',');
+      this.$refs.questionEdit.form.city = item.city.split(",");
       // 把multiple_select_answer从字符串转成数组
-      this.$refs.questionEdit.form.multiple_select_answer=item.multiple_select_answer.split(',');
+      this.$refs.questionEdit.form.multiple_select_answer = item.multiple_select_answer.split(
+        ","
+      );
+    },
+    // 修改试题状态的事件
+    changeStatus(item) {
+      questionStatus({
+        id: item.id
+      }).then(res => {
+        if (res.data.code == 200) {
+          this.$message.success("状态修改成功");
+          this.getList();
+        } else {
+          this.$message.error(res.data.message);
+        }
+      });
+    },
+    // 删除按钮的点击事件
+    handleDelete(item) {
+      // 弹出确认框
+      this.$confirm("请问是否要删除这行数据？").then(() => {
+        questionDel({ id: item.id }).then(res => {
+          if (res.data.code == 200) {
+            this.$message.success("删除试题成功");
+            this.getList();
+          } else {
+            this.$message.error(res.data.message);
+          }
+        });
+      }).catch(()=>{
+        this.$message('没有删除该条数据');
+      });
     },
     // 页容量改变事件
     handleSizeChange(size) {

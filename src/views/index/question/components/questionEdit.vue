@@ -145,22 +145,22 @@ export default {
         select_options: [
           {
             label: "A",
-            text: "测试1",
+            text: "",
             image: ""
           },
           {
             label: "B",
-            text: "测试2",
+            text: "",
             image: ""
           },
           {
             label: "C",
-            text: "测试3",
+            text: "",
             image: ""
           },
           {
             label: "D",
-            text: "测试4",
+            text: "",
             image: ""
           }
         ],
