@@ -10,6 +10,7 @@
 // 导入富文本编辑器
 import wangEditor from "wangeditor";
 export default {
+  name:"wangEditor",
   props: {
       value:{
           type:String,
@@ -32,6 +33,7 @@ export default {
       this.$emit('input',html);
     };
     this.editor.create();
+    this.editor.txt.html(this.value);
   },
   methods: {
     // 获取富文本编辑器的内容

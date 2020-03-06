@@ -145,22 +145,22 @@ export default {
         select_options: [
           {
             label: "A",
-            text: "狗不理",
+            text: "测试1",
             image: ""
           },
           {
             label: "B",
-            text: "猫不理",
+            text: "测试2",
             image: ""
           },
           {
             label: "C",
-            text: "麻花",
+            text: "测试3",
             image: ""
           },
           {
             label: "D",
-            text: "炸酱面",
+            text: "测试4",
             image: ""
           }
         ],
@@ -193,7 +193,7 @@ export default {
       // 做整个表单验证
       this.$refs.form.validate(v => {
         if (v) {
-          window.console.log("全部通过");
+          // window.console.log("全部通过");
           questionAdd(this.form).then(res=>{
             window.console.log(res);
             if (res.data.code==200) {
