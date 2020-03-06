@@ -1,10 +1,11 @@
 <template>
   <div class="option-box">
-    <el-radio :label="label"></el-radio>
+    <el-radio v-if="isRadio" :label="label"></el-radio>
+    <el-checkbox v-else :label="label"></el-checkbox>
     <el-input v-model="selfText" @input="onInput"></el-input>
     <el-upload
       class="avatar-uploader"
-      action="https://jsonplaceholder.typicode.com/posts/"
+      :action="uploadUrl"
       :show-file-list="false"
       :on-success="handleAvatarSuccess"
       :before-upload="beforeAvatarUpload"
@@ -17,11 +18,23 @@
 
 <script>
 export default {
-  props: ["label", "text", "image"],
+  props:{
+    label:String,
+    text:String,
+    image:String,
+    isRadio:{
+      type:Boolean,
+      default:true
+    }
+  },
   data() {
     return {
+      // 图片路径
       imageUrl: this.image,
-      selfText: this.text
+      // 输入框文本
+      selfText: this.text,
+      // 上传路径
+      uploadUrl:process.env.VUE_APP_BASE_URL+'/question/upload',
     };
   },
   methods: {
@@ -32,19 +45,21 @@ export default {
     // 选项中 上传成功的事件
     handleAvatarSuccess(res, file) {
       this.imageUrl = URL.createObjectURL(file.raw);
+      // 将上传成功后，响应的图片地址 赋值给父组件
+      this.$emit('update:image',res.data.url);
     },
     // 选项中 上传前的事件
     beforeAvatarUpload(file) {
-      const isJPG = file.type === "image/jpeg";
+      const isImage = file.type === "image/jpeg"||"image/png"||"image/gif";
       const isLt2M = file.size / 1024 / 1024 < 2;
 
-      if (!isJPG) {
-        this.$message.error("上传头像图片只能是 JPG 格式!");
+      if (!isImage) {
+        this.$message.error("上传头像图片只能是 图片 格式!");
       }
       if (!isLt2M) {
         this.$message.error("上传头像图片大小不能超过 2MB!");
       }
-      return isJPG && isLt2M;
+      return isImage && isLt2M;
     }
   }
 };
@@ -55,6 +70,9 @@ export default {
   display: flex;
   align-items: center;
   margin-top: 45px;
+  .el-checkbox:last-of-type{
+    margin-right: 30px;
+  }
   .el-input {
     width: 476px;
     margin-right: 20px;

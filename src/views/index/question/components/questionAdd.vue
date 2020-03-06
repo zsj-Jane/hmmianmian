@@ -46,29 +46,26 @@
       <el-form-item label="单选" v-if="form.type==1" :label-width="formLabelWidth">
         <el-radio-group v-model="form.single_select_answer">
           <!-- 选项组件 -->
-          <optionItem v-for="(item, index) in form.select_options" :key="index"
-          :label="item.label"
-          :text.sync="item.text"
-          :image="item.image"
+          <optionItem
+            v-for="(item, index) in form.select_options"
+            :key="index"
+            :label="item.label"
+            :text.sync="item.text"
+            :image.sync="item.image"
+            :isRadio="true"
           ></optionItem>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="多选" v-else-if="form.type==2" :label-width="formLabelWidth">
         <el-checkbox-group v-model="form.multiple_select_answer">
-          <div class="option-box" v-for="(item, index) in form.select_options" :key="index">
-            <el-checkbox :label="item.label"></el-checkbox>
-            <el-input v-model="item.text"></el-input>
-            <el-upload
-              class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload"
-            >
-              <img v-if="item.image" :src="item.image" class="avatar" />
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-            </el-upload>
-          </div>
+          <optionItem
+            v-for="(item, index) in form.select_options"
+            :key="index"
+            :label="item.label"
+            :text.sync="item.text"
+            :image.sync="item.image"
+            :isRadio="false"
+          ></optionItem>
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="简答" v-else :label-width="formLabelWidth">
@@ -109,7 +106,7 @@ import chinaArea from "./chinaArea.vue";
 // 导入富文本编辑 组件
 import wangEditor from "./wangEditor.vue";
 // 导入选项组件
-import optionItem from './optionItem.vue';
+import optionItem from "./optionItem.vue";
 export default {
   name: "questionAdd",
   components: {
@@ -135,10 +132,31 @@ export default {
         // 简答题绑定答案
         short_answer: "",
         // 跟选项绑定的数组：选项，介绍，图片介绍
-        select_options:[]
+        select_options: [
+          {
+            label: "A",
+            text: "狗不理",
+            image: "upload/20191129/fd5f03a07d95e3948860240564b180e4.jpeg"
+          },
+          {
+            label: "B",
+            text: "猫不理",
+            image: "upload/20191129/e93e7bb72accda7f3159cdabc4203991.jpeg"
+          },
+          {
+            label: "C",
+            text: "麻花",
+            image: "upload/20191129/b7caf98be9d0aa6764b0112ba0dfa19e.jpeg"
+          },
+          {
+            label: "D",
+            text: "炸酱面",
+            image: "upload/20191129/4067f19ab53a5e8388ad3459e23110f0.jpeg"
+          }
+        ]
       },
       // 上传的文件路径
-      imageUrl:"",
+      imageUrl: "",
       // 表单标签宽度
       formLabelWidth: "100px",
       // 表单验证规则
@@ -146,7 +164,6 @@ export default {
     };
   },
   methods: {
-    
     // 确定按钮的点击事件
     save() {
       // 做整个表单验证
