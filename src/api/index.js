@@ -1,5 +1,5 @@
 // 导入请求对象
-import request from '@/utilis/request.js';
+import request from '@/utils/request.js';
 // 获取当前登录的用户信息
 export function getInfo() {
     return request({

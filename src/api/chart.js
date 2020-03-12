@@ -1,5 +1,5 @@
 // 导入请求对象
-import request from '@/utilis/request.js';
+import request from '@/utils/request.js';
 // 封装一个面板数据接口 方法
 export function chartData() {
     return request({

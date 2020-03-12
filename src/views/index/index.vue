@@ -51,7 +51,7 @@
 // 导入接口
 import { logout } from "@/api/index.js";
 // 导入操作token的文件
-import { removeToken, getToken } from "@/utilis/token.js";
+import { removeToken, getToken } from "@/utils/token.js";
 // 导入子路由规则
 import childrenRoutes from "@/router/childrenRoutes.js";
 export default {

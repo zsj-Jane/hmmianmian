@@ -1,5 +1,5 @@
 // 导入请求对象
-import request from '@/utilis/request.js';
+import request from '@/utils/request.js';
 // 封装一个获取学科列表的接口方法
 export function subjectList(params) {
     return request({

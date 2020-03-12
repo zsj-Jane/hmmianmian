@@ -4,7 +4,7 @@ import Vue from 'vue';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 // 导入操作token的文件
-import { removeToken } from '@/utilis/token';
+import { removeToken } from '@/utils/token';
 // 导入获取用户信息的文件
 import { getInfo } from '@/api/index';
 // element-ui按需导入

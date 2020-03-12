@@ -55,7 +55,7 @@ import reg from './components/register';
 // 导入用户登录方法
 import {login} from '@/api/login.js';
 // 导入 token方法
-import {setToken} from '@/utilis/token.js'
+import {setToken} from '@/utils/token.js'
 export default {
   components:{
     reg
