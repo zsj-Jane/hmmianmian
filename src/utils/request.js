@@ -2,7 +2,7 @@
 // 导入axios
 import axios from 'axios';
 // 导入获取token的文件
-import { getToken } from '@/utilis/token.js';
+import { getToken } from '@/utils/token.js';
 // 克隆一个axios对象，并设置它的初始基因，
 // 以后通过indexRequest对象去发送axios请求，就会自动携带基地址和请求头
 let request = axios.create({
