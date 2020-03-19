@@ -30,7 +30,13 @@ export default {
       // 子传父
       this.$emit("input", this.city);
     }
-  }
+  },
+  watch: {
+    value(val){
+      // value的值一旦发生变化，就表示父组件传递了一个新的城市数据过来，需要更新city的值，才能让级联选择器正常显示
+      this.city = val;
+    }
+  },
 };
 </script>
 

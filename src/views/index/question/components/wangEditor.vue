@@ -22,6 +22,7 @@ export default {
       editor: {}
     };
   },
+  // 只执行一次
   mounted() {
     // 实例化编辑器对象，并传入div Dom对象中
     // let editor = new wangEditor(this.$refs.editor);
@@ -44,7 +45,13 @@ export default {
     setContent(val) {
       this.editor.txt.html(val);
     }
-  }
+  },
+  watch: {
+    value(val){
+      // value的值一旦发生变化，就表示父组件传递了一个新的富文本数据过来，需要更新editor的值，才能让富文本编辑器内容正常显示
+      this.editor.txt.html(val);
+    }
+  },
 };
 </script>
 
