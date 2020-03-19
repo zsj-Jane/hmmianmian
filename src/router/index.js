@@ -26,7 +26,7 @@ const router = new VueRouter({
         {
             // 路由重定向
             path: '/',
-            redirect: login
+            redirect: '/login'
         },
         {
             path: '/login',
