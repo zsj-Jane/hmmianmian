@@ -98,7 +98,11 @@ export default {
       // 分页器的数据总量
       total: 0,
       // 记录上一次点击的数据
-      oldItem: ""
+      oldItem: "",
+      // 标记刚刚点击的是否为新增
+      isClickedAdd :false,
+      // 点击新增前改动过的编辑表单数据
+      tempForm:{}
     };
   },
   methods: {
@@ -134,8 +138,12 @@ export default {
       this.$refs.businessDialog.dialogFormVisible = true;
       // 标记为新增状态
       this.$refs.businessDialog.isAdd = true;
+      // 在新增之前把改动的数据先保存起来
+      this.tempForm = this.$refs.businessDialog.form;
       // 清空表单数据
       this.$refs.businessDialog.form = {};
+      // 标记是否刚刚点过新增 改为true
+      this.isClickedAdd = true;
     },
     // 页容量改变事件
     handleSizeChange(size) {
@@ -165,6 +173,9 @@ export default {
         // 读取当前行的表单内容
         this.$refs.businessDialog.form = { ...item };
         this.oldItem=item;
+      }else if(this.isClickedAdd){
+        // 把之前的form值取出来重新赋值
+        this.$refs.businessDialog.form = this.tempForm;
       }
     },
     // 修改企业状态的点击事件
